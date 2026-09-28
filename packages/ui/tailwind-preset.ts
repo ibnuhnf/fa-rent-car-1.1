@@ -31,20 +31,29 @@ const preset = {
         whatsapp: '#25d366',
       },
       borderRadius: {
-        button: '0.75rem',
-        card: '1rem',
-        cta: '1.5rem',
+        // antislop §3.3: fungsional <= 12px, makro <= 16px, hero/CTA 24px
+        button: '0.5rem', // 8px
+        card: '0.75rem', // 12px
+        'card-lg': '1rem', // 16px — modal/sheet/hero card
+        cta: '1.5rem', // 24px — hero search, CTA gelap
       },
       boxShadow: {
+        // antislop §3.2: blur <= 16px, opacity <= 0.15
         card: '0 1px 8px rgba(0, 0, 0, 0.04)',
         'card-hover': '0 8px 24px rgba(0, 0, 0, 0.08)',
-        action: '0 4px 14px rgba(24, 79, 214, 0.3)',
+        action: '0 2px 6px rgba(24, 79, 214, 0.12)',
         topbar: '0 1px 8px rgba(0, 0, 0, 0.04)',
         'bottom-tab': '0 -2px 12px rgba(0, 0, 0, 0.04)',
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['Space Grotesk', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+      },
+      letterSpacing: {
+        tighter: '-0.02em',
+        tight: '-0.01em',
+        eyebrow: '0.08em',
       },
       fontSize: {
         'display-lg': [

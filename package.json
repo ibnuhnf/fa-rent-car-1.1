@@ -3,11 +3,15 @@
   "private": true,
   "packageManager": "pnpm@10.26.0",
   "engines": {
-    "node": ">=24 <25",
+    "node": ">=18 <25",
     "pnpm": ">=10 <11"
   },
   "scripts": {
     "dev": "bash scripts/dev.sh",
+    "dev:fast": "bash scripts/dev-fast.sh",
+    "dev:admin": "bash scripts/dev-fast.sh admin",
+    "dev:customer": "bash scripts/dev-fast.sh customer",
+    "dev:api": "bash scripts/dev-fast.sh api",
     "build": "turbo run build",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "turbo run typecheck",

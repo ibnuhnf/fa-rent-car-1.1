@@ -11,6 +11,7 @@ export default tseslint.config(
       '**/coverage/**',
       '**/next-env.d.ts',
       '.hoplite/**',
+      '.remember/**',
       'docs/design-reference/**',
     ],
   },

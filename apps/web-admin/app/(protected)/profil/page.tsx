@@ -14,7 +14,7 @@ export default async function ProfilePage() {
     <div className="max-w-2xl space-y-6">
       <section>
         <p className="text-label-md uppercase tracking-[0.08em] text-secondary">Akun admin</p>
-        <h1 className="mt-2 text-headline-lg-mobile tracking-[-0.02em] text-on-surface sm:text-headline-lg">
+        <h1 className="mt-2 font-display text-headline-lg-mobile tracking-[-0.02em] text-on-surface sm:text-headline-lg">
           Profil
         </h1>
         <p className="mt-2 text-body-md text-on-surface-variant">

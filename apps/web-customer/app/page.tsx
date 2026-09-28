@@ -89,7 +89,7 @@ export default function CustomerHomePage() {
               <span aria-hidden className="size-1.5 rounded-full bg-secondary" />
               FA RENT CAR · Cirebon
             </p>
-            <h1 className="mt-5 text-headline-lg-mobile tracking-[-0.02em] text-on-surface sm:text-headline-lg lg:text-display-lg">
+            <h1 className="mt-5 font-display text-headline-lg-mobile tracking-[-0.02em] text-on-surface sm:text-headline-lg lg:text-display-lg">
               Sewa Mobil Lepas Kunci &amp; Dengan Sopir di Cirebon
             </h1>
             <p className="mt-5 max-w-2xl text-body-lg text-on-surface-variant">
@@ -120,7 +120,7 @@ export default function CustomerHomePage() {
             <p className="mt-6 text-label-md uppercase tracking-[0.08em] text-secondary">
               Status layanan digital
             </p>
-            <h2 className="mt-2 text-headline-md text-on-surface">
+            <h2 className="mt-2 font-display text-headline-md text-on-surface">
               Pemesanan online sedang dipersiapkan
             </h2>
             <p className="mt-3 text-body-md text-on-surface-variant">
@@ -140,7 +140,7 @@ export default function CustomerHomePage() {
               Informasi layanan
             </p>
             <h2
-              className="mt-2 text-headline-lg-mobile text-on-surface sm:text-headline-lg"
+              className="mt-2 font-display text-headline-lg-mobile text-on-surface sm:text-headline-lg"
               id="layanan-heading"
             >
               Hubungi kami untuk kebutuhan perjalanan Anda
@@ -195,7 +195,7 @@ export default function CustomerHomePage() {
             Mulai dari WhatsApp
           </p>
           <h2
-            className="mt-2 text-headline-lg-mobile text-on-surface sm:text-headline-lg"
+            className="mt-2 font-display text-headline-lg-mobile text-on-surface sm:text-headline-lg"
             id="cara-heading"
           >
             Cara menghubungi kami saat ini
@@ -223,7 +223,10 @@ export default function CustomerHomePage() {
               <p className="text-label-md uppercase tracking-[0.08em] text-secondary-fixed">
                 Kantor & bantuan
               </p>
-              <h2 className="mt-2 text-headline-lg-mobile sm:text-headline-lg" id="bantuan-heading">
+              <h2
+                className="mt-2 font-display text-headline-lg-mobile sm:text-headline-lg"
+                id="bantuan-heading"
+              >
                 FA RENT CAR siap dihubungi 24 jam
               </h2>
               <address className="mt-4 not-italic text-body-lg text-surface-highest">

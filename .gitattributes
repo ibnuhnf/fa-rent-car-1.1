@@ -1,0 +1,17 @@
+# Paksa LF untuk semua file teks agar konsisten lintas OS (Windows/Mac/Linux)
+# Tanpa ini git clone di Windows dengan core.autocrlf=true → CRLF
+# → regex \n di scripts/environment-safety.test.mjs dan Node ReadFile gagal.
+* text=auto eol=lf
+
+# Tetapkan binary agar tidak disentuh
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.eot binary
+*.ttf binary
+*.otf binary
+*.pack binary

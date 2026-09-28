@@ -5,6 +5,7 @@ dist
 .turbo
 .hoplite/artifacts
 .hoplite/rebases
+.remember
 pnpm-lock.yaml
 docs/design-reference
 coverage

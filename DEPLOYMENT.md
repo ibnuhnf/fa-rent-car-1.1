@@ -6,25 +6,26 @@ Dokumen ini berisi langkah-langkah untuk melakukan pengujian lokal serta penyiap
 
 ## 1. Prasyarat Sistem
 
-* **Node.js**: v24.x (atau kompatibel `>=24 <25`)
-* **pnpm**: v10.x (`>=10 <11`)
-* **Docker & Docker Compose**: Untuk menjalankan service pendukung (PostgreSQL, Redis, MinIO)
+- **Node.js**: v24.x (atau kompatibel `>=24 <25`)
+- **pnpm**: v10.x (`>=10 <11`)
+- **Docker & Docker Compose**: Untuk menjalankan service pendukung (PostgreSQL, Redis, MinIO)
 
 ---
 
 ## 2. Persiapan Environment
 
 1. Salin berkas konfigurasi `.env.example` ke `.env`:
+
    ```bash
    cp .env.example .env
    ```
 
 2. Sesuaikan variabel di dalam `.env` sesuai kebutuhan server/production:
-   * `NODE_ENV=production`
-   * `POSTGRES_PASSWORD` & `DATABASE_URL`
-   * `REDIS_PASSWORD` & `REDIS_URL`
-   * `MINIO_ROOT_PASSWORD`, `S3_SECRET_KEY`, dan `S3_ENDPOINT`
-   * `JWT_SECRET` (minimal 48 karakter acak aman)
+   - `NODE_ENV=production`
+   - `POSTGRES_PASSWORD` & `DATABASE_URL`
+   - `REDIS_PASSWORD` & `REDIS_URL`
+   - `MINIO_ROOT_PASSWORD`, `S3_SECRET_KEY`, dan `S3_ENDPOINT`
+   - `JWT_SECRET` (minimal 48 karakter acak aman)
 
 ---
 
@@ -41,17 +42,19 @@ docker compose up -d
 ## 4. Install Dependensi & Setup Database
 
 1. **Install dependensi project**:
+
    ```bash
    pnpm install
    ```
 
 2. **Generate Client Database & Migrasi**:
+
    ```bash
    pnpm db:generate
    pnpm db:migrate
    ```
 
-3. *(Opsional)* **Seed data awal / Admin**:
+3. _(Opsional)_ **Seed data awal / Admin**:
    ```bash
    pnpm db:seed
    ```
@@ -73,11 +76,13 @@ pnpm build
 ### Opsi A: Menggunakan PM2 / Node Process Manager
 
 1. **Backend API (`apps/api`)**:
+
    ```bash
    node apps/api/dist/index.js
    ```
 
 2. **Web Admin (`apps/web-admin`)**:
+
    ```bash
    pnpm --filter @fa/web-admin start
    ```
@@ -90,6 +95,7 @@ pnpm build
 ### Opsi B: Menggunakan Reverse Proxy (Nginx / Caddy)
 
 Arahkan domain ke masing-masing port service:
-* **API Backend**: Port `4000`
-* **Web Customer**: Port `3000` (atau port default Next.js/Vite)
-* **Web Admin**: Port `3001`
+
+- **API Backend**: Port `4000`
+- **Web Customer**: Port `3000` (atau port default Next.js/Vite)
+- **Web Admin**: Port `3001`

@@ -211,12 +211,13 @@ Urutan fase mengikuti `docs/prd.md` §13. Setiap task selesai harus punya: kode,
 
 ## Catatan keputusan
 
-| Tanggal    | Keputusan                                                                                                                          |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| 2026-09-13 | Deposit/jaminan dihapus; bayar 100% di muka                                                                                        |
-| 2026-09-13 | Ambil/kembali hanya di kantor                                                                                                      |
-| 2026-09-13 | Customer tanpa akun; portal via token                                                                                              |
-| 2026-09-13 | Stack: NestJS + Next.js + Prisma + PostgreSQL                                                                                      |
-| 2026-09-13 | Contoh desain awal ditolak; referensi Stitch dari user diadopsi → `docs/design.md`                                                 |
-| 2026-09-13 | Irisan awal Fase 0 dibatasi pada fondasi dan sesi admin nyata; modul rental tidak dipalsukan → `docs/adr/0001-foundation-slice.md` |
-| 2026-09-13 | Rotasi keluarga sesi, CSRF, dan audit dalam transaksi database → `docs/adr/0002-admin-session-security.md`                         |
+| Tanggal    | Keputusan                                                                                                                                                                                                                                                                                 |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-09-13 | Deposit/jaminan dihapus; bayar 100% di muka                                                                                                                                                                                                                                               |
+| 2026-09-13 | Ambil/kembali hanya di kantor                                                                                                                                                                                                                                                             |
+| 2026-09-13 | Customer tanpa akun; portal via token                                                                                                                                                                                                                                                     |
+| 2026-09-13 | Stack: NestJS + Next.js + Prisma + PostgreSQL                                                                                                                                                                                                                                             |
+| 2026-09-13 | Contoh desain awal ditolak; referensi Stitch dari user diadopsi → `docs/design.md`                                                                                                                                                                                                        |
+| 2026-09-13 | Irisan awal Fase 0 dibatasi pada fondasi dan sesi admin nyata; modul rental tidak dipalsukan → `docs/adr/0001-foundation-slice.md`                                                                                                                                                        |
+| 2026-09-13 | Rotasi keluarga sesi, CSRF, dan audit dalam transaksi database → `docs/adr/0002-admin-session-security.md`                                                                                                                                                                                |
+| 2026-09-29 | Rekonsiliasi spec baru (2026-09-29) → `docs/spec-reconciliation.md`: deposit, antar-jemput, cicilan, akun customer, multi-cabang, payment gateway, i18n, bagi hasil investor **tetap tidak diaktifkan**; staf lapangan terpisah menunggu ADR baru; jawaban 9 pertanyaan client ditetapkan |

@@ -26,7 +26,7 @@ export default async function LoginPage() {
         <Brand subtitle="Operations Hub" />
         <div className="mt-8">
           <p className="text-label-md uppercase tracking-[0.08em] text-secondary">Akses admin</p>
-          <h1 className="mt-2 text-headline-lg-mobile text-on-surface sm:text-headline-lg">
+          <h1 className="mt-2 font-display text-headline-lg-mobile text-on-surface sm:text-headline-lg">
             Masuk ke Operations Hub
           </h1>
           <p className="mt-3 text-body-md text-on-surface-variant">

@@ -1,7 +1,18 @@
+/* ============================================================
+   packages/ui/src/styles.css
+   Sumber token: docs/design.md — wajib LF lintas OS (.gitattributes)
+   Catatan antislop: ini HEX -> OKLCH BRIDGE (Opsi C hybrid).
+   Komponen produksi pakai utility Tailwind dari tailwind-preset.ts;
+   variabel --antislop-* untuk eksperimen/Storybook saja.
+   ============================================================ */
+
 @import '@fontsource/inter/400.css';
 @import '@fontsource/inter/500.css';
 @import '@fontsource/inter/600.css';
 @import '@fontsource/inter/700.css';
+@import '@fontsource/space-grotesk/500.css';
+@import '@fontsource/space-grotesk/600.css';
+@import '@fontsource/space-grotesk/700.css';
 @import 'material-symbols/outlined.css';
 
 .material-symbols-outlined {
@@ -10,4 +21,74 @@
     'wght' 400,
     'GRAD' 0,
     'opsz' 24;
+}
+
+/* Display font pairing (antislop §5.1: Display + Body) */
+:root {
+  --font-display: 'Space Grotesk', 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+/* Tabular numerals untuk angka finansial/stat */
+.tabular-nums,
+table,
+[data-tabular] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Bridge OKLCH <-> hex — konversi tiap token preset.
+   Nilai oklch() butuh spasi longgar saat ditulis inline; file ini
+   memakai format satu baris agar prettier tidak memecahnya. */
+:root {
+  --antislop-background: oklch(0.971 0.005 250); /* #f8f9fb */
+  --antislop-surface-lowest: oklch(1 0 0); /* #ffffff */
+  --antislop-surface-low: oklch(0.965 0.004 250); /* #f2f4f6 */
+  --antislop-surface: oklch(0.953 0.004 250); /* #edeef0 */
+  --antislop-surface-high: oklch(0.945 0.005 250); /* #e7e8ea */
+  --antislop-surface-highest: oklch(0.932 0.005 250); /* #e1e2e4 */
+  --antislop-on-surface: oklch(0.221 0.012 250); /* #191c1e */
+  --antislop-on-surface-variant: oklch(0.299 0.011 20); /* #4c4546 */
+  --antislop-outline: oklch(0.521 0.008 20); /* #7e7576 */
+  --antislop-primary: oklch(0 0 0); /* #000000 */
+  --antislop-primary-container: oklch(0.105 0 0); /* #1b1b1b */
+  --antislop-secondary: oklch(0.428 0.198 264); /* #184fd6 */
+  --antislop-secondary-container: oklch(0.52 0.19 264); /* #3d6af0 */
+  --antislop-secondary-fixed: oklch(0.918 0.045 264); /* #dce1ff */
+  --antislop-on-secondary-fixed-variant: oklch(0.337 0.18 264); /* #003ab1 */
+  --antislop-success: oklch(0.58 0.14 150); /* #1a9e5c */
+  --antislop-success-container: oklch(0.94 0.045 150); /* #e3f5ea */
+  --antislop-on-success-container: oklch(0.38 0.11 150); /* #146c2e */
+  --antislop-warning: oklch(0.715 0.15 80); /* #e6a700 */
+  --antislop-warning-container: oklch(0.965 0.06 90); /* #fff4d6 */
+  --antislop-on-warning-container: oklch(0.395 0.11 75); /* #8a5a00 */
+  --antislop-error: oklch(0.527 0.198 25); /* #ba1a1a */
+  --antislop-error-container: oklch(0.94 0.04 25); /* #ffdad6 */
+  --antislop-on-error-container: oklch(0.395 0.155 25); /* #93000a */
+  --antislop-whatsapp: oklch(0.755 0.155 145); /* #25d366 */
+}
+
+/* Shadow ramp (antislop §3.2: blur <= 16px, opacity <= 0.15) */
+:root {
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.08);
+  /* Diturun dari 0.30 -> 0.12 agar lolos ban #5 */
+  --shadow-action: 0 2px 6px rgba(24, 79, 214, 0.12);
+}
+
+/* Radius ramp (antislop §3.3):
+   -sm 4 chip | -md 6 badge | -lg 8 button |
+   -xl 12 card/panel | -2xl 16 modal/hero | -3xl 24 sheet */
+:root {
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
 }

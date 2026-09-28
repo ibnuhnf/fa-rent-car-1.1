@@ -18,3 +18,4 @@ export { Sidebar, type SidebarProps } from './Sidebar';
 export { StatCard, type StatCardProps } from './StatCard';
 export { Table, type TableColumn, type TableProps } from './Table';
 export { Topbar, type TopbarProps } from './Topbar';
+export { useDebounce } from './lib/useDebounce';

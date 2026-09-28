@@ -37,7 +37,7 @@ export default async function FleetPage({ searchParams }: FleetPageProps) {
             </Badge>
             {hasDemoVehicles ? <Badge tone="warning">Data contoh</Badge> : null}
           </div>
-          <h1 className="mt-4 text-headline-lg-mobile tracking-[-0.02em] text-on-surface sm:text-headline-lg">
+          <h1 className="mt-4 font-display text-headline-lg-mobile tracking-[-0.02em] text-on-surface sm:text-headline-lg">
             Manajemen Armada
           </h1>
           <p className="mt-2 max-w-2xl text-body-md text-on-surface-variant">

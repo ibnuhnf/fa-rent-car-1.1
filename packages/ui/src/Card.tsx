@@ -8,10 +8,16 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   tone?: 'default' | 'info' | 'warning';
 }
 
+/**
+ * antislop ban #12 — jangan tumpuk border + shadow + background sekaligus.
+ *   default: bg + shadow, tanpa border (elevasi tonal)
+ *   info/warning: bg + hairline border, tanpa shadow
+ *   interactive: tambah shadow hover sebagai umpan balik
+ */
 const toneClasses = {
-  default: 'border-surface-highest bg-surface-lowest',
-  info: 'border-secondary-fixed bg-secondary-fixed',
-  warning: 'border-warning-container bg-warning-container',
+  default: 'bg-surface-lowest shadow-card',
+  info: 'border border-secondary-fixed bg-secondary-fixed',
+  warning: 'border border-warning-container bg-warning-container',
 };
 
 const paddingClasses = {
@@ -32,7 +38,7 @@ export function Card({
     <div
       {...props}
       className={cx(
-        'rounded-card border shadow-card',
+        'rounded-card',
         toneClasses[tone],
         interactive &&
           'transition duration-150 ease-out hover:-translate-y-0.5 hover:shadow-card-hover motion-reduce:transform-none motion-reduce:transition-none',
