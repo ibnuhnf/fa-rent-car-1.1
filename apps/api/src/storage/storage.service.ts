@@ -77,6 +77,15 @@ export class StorageService implements OnModuleDestroy {
     );
   }
 
+  // Callers must have already authorized the request; this only signs the key.
+  async createDownload(objectKey: string) {
+    return getSignedUrl(
+      this.client,
+      new GetObjectCommand({ Bucket: this.bucket, Key: objectKey }),
+      { expiresIn: SIGNED_URL_TTL_SECONDS },
+    );
+  }
+
   onModuleDestroy() {
     this.client.destroy();
   }

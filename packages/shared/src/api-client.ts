@@ -74,6 +74,8 @@ export interface ApiClientOptions {
   fetch?: typeof globalThis.fetch;
 }
 
+export type ApiMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
+
 export interface ApiClient {
   get<TSchema extends z.ZodType>(
     path: string,
@@ -83,6 +85,23 @@ export interface ApiClient {
   post<TBody, TSchema extends z.ZodType>(
     path: string,
     body: TBody,
+    schema: TSchema,
+    init?: RequestInit,
+  ): Promise<z.output<TSchema>>;
+  patch<TBody, TSchema extends z.ZodType>(
+    path: string,
+    body: TBody,
+    schema: TSchema,
+    init?: RequestInit,
+  ): Promise<z.output<TSchema>>;
+  put<TBody, TSchema extends z.ZodType>(
+    path: string,
+    body: TBody,
+    schema: TSchema,
+    init?: RequestInit,
+  ): Promise<z.output<TSchema>>;
+  delete<TSchema extends z.ZodType>(
+    path: string,
     schema: TSchema,
     init?: RequestInit,
   ): Promise<z.output<TSchema>>;
@@ -138,7 +157,7 @@ async function readJson(response: Response): Promise<unknown> {
 async function request<TSchema extends z.ZodType>(
   fetchImplementation: typeof globalThis.fetch | undefined,
   baseUrl: string,
-  method: 'GET' | 'POST',
+  method: ApiMethod,
   path: string,
   schema: TSchema,
   init: RequestInit | undefined,
@@ -154,8 +173,8 @@ async function request<TSchema extends z.ZodType>(
     response = await fetchImplementation(buildUrl(baseUrl, path), {
       ...init,
       method,
-      body: method === 'POST' ? serializedBody : undefined,
-      headers: buildHeaders(init, method === 'POST' && serializedBody !== undefined),
+      body: serializedBody,
+      headers: buildHeaders(init, serializedBody !== undefined),
       credentials: 'include',
       cache: 'no-store',
     });
@@ -192,15 +211,32 @@ async function request<TSchema extends z.ZodType>(
 
 export function createApiClient({ baseUrl, fetch }: ApiClientOptions): ApiClient {
   const fetchImplementation = fetch ?? globalThis.fetch;
+  const withBody = (method: ApiMethod) =>
+    async <TBody, TSchema extends z.ZodType>(
+      path: string,
+      body: TBody,
+      schema: TSchema,
+      init?: RequestInit,
+    ) =>
+      request(
+        fetchImplementation,
+        baseUrl,
+        method,
+        path,
+        schema,
+        init,
+        serializeJson(body ?? {}),
+      );
 
   return {
     get(path, schema, init) {
       return request(fetchImplementation, baseUrl, 'GET', path, schema, init);
     },
-    async post(path, body, schema, init) {
-      const serializedBody = body === undefined ? undefined : serializeJson(body);
-
-      return request(fetchImplementation, baseUrl, 'POST', path, schema, init, serializedBody);
+    post: withBody('POST'),
+    patch: withBody('PATCH'),
+    put: withBody('PUT'),
+    delete(path, schema, init) {
+      return request(fetchImplementation, baseUrl, 'DELETE', path, schema, init, '{}');
     },
   };
 }
