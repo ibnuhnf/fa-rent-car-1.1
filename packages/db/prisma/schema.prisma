@@ -50,18 +50,64 @@ enum VehicleStatus {
   @@map("vehicle_status")
 }
 
+enum BookingStatus {
+  PENDING_VERIFICATION
+  ACTIVE
+  COMPLETED
+  EXPIRED
+  CANCELLED
+
+  @@map("booking_status")
+}
+
+enum DocumentType {
+  KTP
+  SIM_A
+
+  @@map("document_type")
+}
+
+enum DocumentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+
+  @@map("document_status")
+}
+
+enum InvoiceStatus {
+  UNPAID
+  PAID
+  PARTIALLY_REFUNDED
+  REFUNDED
+  VOID
+
+  @@map("invoice_status")
+}
+
+enum PricingRuleType {
+  WEEKEND
+  HOLIDAY
+  HIGH_SEASON
+  LONG_DURATION
+
+  @@map("pricing_rule_type")
+}
+
 model AdminUser {
-  id           String        @id @default(uuid()) @db.Uuid
-  name         String
-  email        String        @unique
-  passwordHash String        @map("password_hash")
-  role         AdminRole     @default(STAFF)
-  isActive     Boolean       @default(true) @map("is_active")
-  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
-  deletedAt    DateTime?     @map("deleted_at") @db.Timestamptz(6)
-  authSessions AuthSession[]
-  auditLogs    AuditLog[]    @relation("AuditLogActor")
+  id                String              @id @default(uuid()) @db.Uuid
+  name              String
+  email             String              @unique
+  passwordHash      String              @map("password_hash")
+  role              AdminRole           @default(STAFF)
+  isActive          Boolean             @default(true) @map("is_active")
+  createdAt         DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt         DateTime?           @map("deleted_at") @db.Timestamptz(6)
+  authSessions      AuthSession[]
+  auditLogs         AuditLog[]          @relation("AuditLogActor")
+  verifiedDocuments BookingDocument[]   @relation("DocumentVerifier")
+  confirmedPayments Payment[]           @relation("PaymentConfirmer")
 
   @@index([isActive], map: "admin_users_is_active_idx")
   @@map("admin_users")
@@ -124,6 +170,8 @@ model Vehicle {
   updatedAt    DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
   photos       VehiclePhoto[]
   rate         VehicleRate?
+  bookingItems BookingItem[]
+  pricingRules PricingRule[]
 
   @@index([status], map: "vehicles_status_idx")
   @@index([category], map: "vehicles_category_idx")
@@ -162,4 +210,194 @@ model Setting {
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@map("settings")
+}
+
+// Customers never own an account or password; portal access is token based.
+model Customer {
+  id              String    @id @default(uuid()) @db.Uuid
+  nik             String    @unique @db.VarChar(32)
+  name            String
+  whatsapp        String    @unique @db.VarChar(32)
+  email           String?   @db.VarChar(254)
+  address         String    @db.Text
+  isBlacklisted   Boolean   @default(false) @map("is_blacklisted")
+  blacklistReason String?   @map("blacklist_reason") @db.Text
+  notes           String?   @db.Text
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz(6)
+  bookings        Booking[]
+
+  @@index([isBlacklisted], map: "customers_is_blacklisted_idx")
+  @@map("customers")
+}
+
+model Booking {
+  id            String               @id @default(uuid()) @db.Uuid
+  bookingCode   String               @unique @map("booking_code") @db.VarChar(32)
+  customerId    String               @map("customer_id") @db.Uuid
+  status        BookingStatus        @default(PENDING_VERIFICATION)
+  holdExpiresAt DateTime             @map("hold_expires_at") @db.Timestamptz(6)
+  pickupOffice  String               @default("Kantor FA RENT CAR, Kedawung") @map("pickup_office")
+  notes         String?              @db.Text
+  internalNotes String?              @map("internal_notes") @db.Text
+  createdAt     DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime             @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt     DateTime?            @map("deleted_at") @db.Timestamptz(6)
+  customer      Customer             @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  items         BookingItem[]
+  documents     BookingDocument[]
+  accessTokens  BookingAccessToken[]
+  invoices      Invoice[]
+
+  @@index([customerId], map: "bookings_customer_id_idx")
+  @@index([status], map: "bookings_status_idx")
+  @@index([holdExpiresAt], map: "bookings_hold_expires_at_idx")
+  @@index([createdAt], map: "bookings_created_at_idx")
+  @@map("bookings")
+}
+
+model BookingItem {
+  id              String   @id @default(uuid()) @db.Uuid
+  bookingId       String   @map("booking_id") @db.Uuid
+  vehicleId       String   @map("vehicle_id") @db.Uuid
+  startDate       DateTime @map("start_date") @db.Timestamptz(6)
+  endDate         DateTime @map("end_date") @db.Timestamptz(6)
+  withDriver      Boolean  @default(false) @map("with_driver")
+  driverPerDay    Int      @default(0) @map("driver_per_day")
+  // Driver model arrives in Fase 3; keep the raw id until then.
+  driverId        String?  @map("driver_id") @db.Uuid
+  vehicleAmount   Int      @map("vehicle_amount")
+  driverAmount    Int      @map("driver_amount")
+  surchargeAmount Int      @map("surcharge_amount")
+  promoDiscount   Int      @default(0) @map("promo_discount")
+  totalAmount     Int      @map("total_amount")
+  snapshot        Json
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  booking         Booking  @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  vehicle         Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Restrict)
+
+  @@index([bookingId], map: "booking_items_booking_id_idx")
+  @@index([vehicleId], map: "booking_items_vehicle_id_idx")
+  @@index([startDate, endDate], map: "booking_items_period_idx")
+  @@map("booking_items")
+}
+
+model BookingDocument {
+  id              String         @id @default(uuid()) @db.Uuid
+  bookingId       String         @map("booking_id") @db.Uuid
+  type            DocumentType
+  objectKey       String         @map("object_key") @db.VarChar(512)
+  status          DocumentStatus @default(PENDING)
+  rejectionReason String?        @map("rejection_reason") @db.Text
+  verifiedBy      String?        @map("verified_by") @db.Uuid
+  verifiedAt      DateTime?      @map("verified_at") @db.Timestamptz(6)
+  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime       @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  booking         Booking        @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  verifier        AdminUser?     @relation("DocumentVerifier", fields: [verifiedBy], references: [id], onDelete: Restrict)
+
+  @@index([bookingId], map: "booking_documents_booking_id_idx")
+  @@index([status], map: "booking_documents_status_idx")
+  @@map("booking_documents")
+}
+
+model BookingAccessToken {
+  id         String    @id @default(uuid()) @db.Uuid
+  bookingId  String    @map("booking_id") @db.Uuid
+  tokenHash  String    @unique @map("token_hash") @db.VarChar(64)
+  expiresAt  DateTime  @map("expires_at") @db.Timestamptz(6)
+  lastUsedAt DateTime? @map("last_used_at") @db.Timestamptz(6)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  booking    Booking   @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+
+  @@index([bookingId], map: "booking_access_tokens_booking_id_idx")
+  @@index([expiresAt], map: "booking_access_tokens_expires_at_idx")
+  @@map("booking_access_tokens")
+}
+
+// Invoices are immutable snapshots. Editing a booking creates a new version.
+model Invoice {
+  id            String        @id @default(uuid()) @db.Uuid
+  invoiceNumber String        @unique @map("invoice_number") @db.VarChar(32)
+  bookingId     String        @map("booking_id") @db.Uuid
+  version       Int           @default(1)
+  status        InvoiceStatus @default(UNPAID)
+  subtotal      Int
+  discount      Int           @default(0)
+  totalAmount   Int           @map("total_amount")
+  bankAccount   Json          @map("bank_account")
+  terms         String?       @db.Text
+  issuedAt      DateTime      @default(now()) @map("issued_at") @db.Timestamptz(6)
+  paidAt        DateTime?     @map("paid_at") @db.Timestamptz(6)
+  pdfObjectKey  String?       @map("pdf_object_key") @db.VarChar(512)
+  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  booking       Booking       @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  items         InvoiceItem[]
+  payments      Payment[]
+
+  @@unique([bookingId, version], map: "invoices_booking_id_version_key")
+  @@index([bookingId], map: "invoices_booking_id_idx")
+  @@index([status], map: "invoices_status_idx")
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id          String  @id @default(uuid()) @db.Uuid
+  invoiceId   String  @map("invoice_id") @db.Uuid
+  description String  @db.VarChar(255)
+  quantity    Int     @default(1)
+  unitPrice   Int     @map("unit_price")
+  amount      Int
+  metadata    Json?
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+
+  @@index([invoiceId], map: "invoice_items_invoice_id_idx")
+  @@map("invoice_items")
+}
+
+// Manual bank transfer only. No payment gateway is modelled by design.
+model Payment {
+  id             String    @id @default(uuid()) @db.Uuid
+  invoiceId      String    @map("invoice_id") @db.Uuid
+  amount         Int
+  paymentDate    DateTime  @map("payment_date") @db.Timestamptz(6)
+  bankName       String    @map("bank_name") @db.VarChar(128)
+  accountHolder  String?   @map("account_holder") @db.VarChar(128)
+  proofObjectKey String    @map("proof_object_key") @db.VarChar(512)
+  confirmedBy    String    @map("confirmed_by") @db.Uuid
+  confirmedAt    DateTime  @default(now()) @map("confirmed_at") @db.Timestamptz(6)
+  notes          String?   @db.Text
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  invoice        Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+  confirmedAdmin AdminUser @relation("PaymentConfirmer", fields: [confirmedBy], references: [id], onDelete: Restrict)
+
+  @@index([invoiceId], map: "payments_invoice_id_idx")
+  @@index([paymentDate], map: "payments_payment_date_idx")
+  @@map("payments")
+}
+
+model PricingRule {
+  id                    String          @id @default(uuid()) @db.Uuid
+  // null vehicle = rule applies to the whole fleet.
+  vehicleId             String?         @map("vehicle_id") @db.Uuid
+  name                  String          @db.VarChar(128)
+  type                  PricingRuleType
+  startDate             DateTime        @map("start_date") @db.Timestamptz(6)
+  endDate               DateTime        @map("end_date") @db.Timestamptz(6)
+  // e.g. 11000 = +10% (basis points, integer rupiah math only).
+  multiplierBasisPoints Int?            @map("multiplier_basis_points")
+  fixedSurcharge        Int?            @map("fixed_surcharge")
+  isActive              Boolean         @default(true) @map("is_active")
+  createdAt             DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  vehicle               Vehicle?        @relation(fields: [vehicleId], references: [id], onDelete: Restrict)
+
+  @@index([vehicleId], map: "pricing_rules_vehicle_id_idx")
+  @@index([type], map: "pricing_rules_type_idx")
+  @@index([startDate, endDate], map: "pricing_rules_period_idx")
+  @@index([isActive], map: "pricing_rules_is_active_idx")
+  @@map("pricing_rules")
 }
