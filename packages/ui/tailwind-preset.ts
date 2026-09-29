@@ -71,6 +71,10 @@ const preset = {
         ],
         title: ['1.125rem', { lineHeight: '1.625rem', fontWeight: '600' }],
         stat: ['2.25rem', { lineHeight: '2.5rem', fontWeight: '700' }],
+        'price-lg': [
+          '2rem',
+          { lineHeight: '2.25rem', letterSpacing: '-0.02em', fontWeight: '700' },
+        ],
         'body-lg': ['1rem', { lineHeight: '1.5rem', fontWeight: '500' }],
         'body-md': ['0.875rem', { lineHeight: '1.3125rem', fontWeight: '400' }],
         'label-md': ['0.75rem', { lineHeight: '1rem', letterSpacing: '0.02em', fontWeight: '600' }],
