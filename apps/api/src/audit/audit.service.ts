@@ -7,12 +7,32 @@ export type AuthAuditAction =
   | 'AUTH_REFRESH_REUSE'
   | 'AUTH_LOGOUT';
 
+export type VehicleAuditAction =
+  | 'VEHICLE_CREATED'
+  | 'VEHICLE_UPDATED'
+  | 'VEHICLE_DELETED'
+  | 'VEHICLE_PHOTOS_UPLOADED'
+  | 'VEHICLE_PHOTO_DELETED'
+  | 'VEHICLE_RATE_UPDATED'
+  | 'PRICING_RULE_CREATED';
+
 export type StorageAuditAction = 'STORAGE_UPLOAD_URL_ISSUED' | 'STORAGE_DOWNLOAD_URL_ISSUED';
+
+export type AuditAction = AuthAuditAction | VehicleAuditAction;
 
 export interface AuthAuditEvent {
   actorId: string;
   action: AuthAuditAction;
   objectId: string;
+  before?: Prisma.InputJsonObject;
+  after?: Prisma.InputJsonObject;
+}
+
+export interface VehicleAuditEvent {
+  actorId: string;
+  action: VehicleAuditAction;
+  objectId: string;
+  objectType: string;
   before?: Prisma.InputJsonObject;
   after?: Prisma.InputJsonObject;
 }
@@ -35,8 +55,8 @@ export const AUDIT_OBJECT_TYPES = {
 export class AuditService {
   private append(
     transaction: Prisma.TransactionClient,
-    objectType: (typeof AUDIT_OBJECT_TYPES)[keyof typeof AUDIT_OBJECT_TYPES],
-    event: AuthAuditEvent | StorageAuditEvent,
+    objectType: string,
+    event: AuthAuditEvent | VehicleAuditEvent | StorageAuditEvent,
   ): Promise<AuditLog> {
     return transaction.auditLog.create({
       data: { ...event, objectType },
@@ -45,6 +65,13 @@ export class AuditService {
 
   record(transaction: Prisma.TransactionClient, event: AuthAuditEvent): Promise<AuditLog> {
     return this.append(transaction, AUDIT_OBJECT_TYPES.AUTH_SESSION, event);
+  }
+
+  recordVehicle(
+    transaction: Prisma.TransactionClient,
+    event: VehicleAuditEvent,
+  ): Promise<AuditLog> {
+    return this.append(transaction, event.objectType, event);
   }
 
   recordStorage(transaction: Prisma.TransactionClient, event: StorageAuditEvent): Promise<AuditLog> {

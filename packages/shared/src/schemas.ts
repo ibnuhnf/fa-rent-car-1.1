@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { TIMEZONE } from './constants';
+import { MAX_UPLOAD_BYTES, TIMEZONE } from './constants';
 
 function utf8ByteLength(value: string): number {
   let length = 0;
@@ -92,11 +92,13 @@ function paginationInteger(maximum: number) {
   ]);
 }
 
+const paginationFields = {
+  page: paginationInteger(MAX_PAGINATION_SKIP + 1).default(1),
+  limit: paginationInteger(100).default(20),
+};
+
 export const paginationSchema = z
-  .strictObject({
-    page: paginationInteger(MAX_PAGINATION_SKIP + 1).default(1),
-    limit: paginationInteger(100).default(20),
-  })
+  .strictObject(paginationFields)
   .refine(({ page, limit }) => (page - 1) * limit <= MAX_PAGINATION_SKIP, {
     path: ['page'],
     message: 'Pagination offset exceeds the supported range',
@@ -132,6 +134,41 @@ export const vehicleStatusSchema = z.enum([
   'MAINTENANCE',
   'INACTIVE',
 ]);
+
+export const pricingRuleTypeSchema = z.enum(['WEEKEND', 'HOLIDAY', 'HIGH_SEASON', 'LONG_DURATION']);
+
+export const pricingRuleSchema = z.object({
+  id: z.uuid(),
+  vehicleId: z.uuid().nullable(),
+  name: z.string(),
+  type: pricingRuleTypeSchema,
+  startDate: isoDateTimeSchema,
+  endDate: isoDateTimeSchema,
+  multiplierBasisPoints: z.number().int().positive().nullable(),
+  fixedSurcharge: z.number().int().nonnegative().nullable(),
+  isActive: z.boolean(),
+});
+
+// Exactly one pricing lever must be set; both empty (or both set) is not a rule.
+export const pricingRuleCreateSchema = z
+  .strictObject({
+    name: z.string().trim().min(1).max(80),
+    type: pricingRuleTypeSchema,
+    startDate: isoDateTimeSchema,
+    endDate: isoDateTimeSchema,
+    multiplierBasisPoints: z.number().int().min(10_000).max(100_000).nullable().default(null),
+    fixedSurcharge: z.number().int().min(0).max(50_000_000).nullable().default(null),
+    isActive: z.boolean().default(true),
+  })
+  .refine(({ endDate, startDate }) => new Date(endDate).getTime() >= new Date(startDate).getTime(), {
+    path: ['endDate'],
+    message: 'The end date must not precede the start date',
+  })
+  .refine(
+    ({ multiplierBasisPoints, fixedSurcharge }) =>
+      (multiplierBasisPoints !== null) !== (fixedSurcharge !== null),
+    { path: ['multiplierBasisPoints'], message: 'Set either a multiplier or a surcharge, not both' },
+  );
 
 export const vehicleSummarySchema = z.object({
   id: z.uuid(),
@@ -190,6 +227,158 @@ export const systemResponseSchema = z.object({
   checkedAt: isoDateTimeSchema,
 });
 
+export const vehiclePhotoSchema = z.object({
+  id: z.uuid(),
+  objectKey: z.string(),
+  sortOrder: z.number().int().nonnegative(),
+  url: z.string().nullable(),
+});
+
+export const vehicleRateSchema = z.object({
+  daily: z.number().int().nonnegative(),
+  weekly: z.number().int().nonnegative().nullable(),
+  monthly: z.number().int().nonnegative().nullable(),
+  driverPerDay: z.number().int().nonnegative().nullable(),
+  overtimeHourly: z.number().int().nonnegative().nullable(),
+  latePerDay: z.number().int().nonnegative().nullable(),
+});
+
+export const vehiclePlateSchema = z
+  .string()
+  .trim()
+  .toUpperCase()
+  .min(3)
+  .max(16)
+  .regex(/^[A-Z0-9 -]+$/);
+
+export const vehicleCreateSchema = z
+  .strictObject({
+    brand: z.string().trim().min(1).max(60),
+    model: z.string().trim().min(1).max(60),
+    variant: z.string().trim().max(60).default(''),
+    year: z.number().int().min(1980).max(2100),
+    plate: vehiclePlateSchema,
+    color: z.string().trim().min(1).max(40),
+    transmission: vehicleTransmissionSchema,
+    category: vehicleCategorySchema,
+    fuelType: vehicleFuelTypeSchema,
+    capacity: z.number().int().min(1).max(60),
+    luggageCount: z.number().int().min(0).max(60),
+    mileage: z.number().int().min(0).max(2_000_000),
+    facilities: z
+      .array(z.string().trim().min(1).max(40))
+      .max(30)
+      .refine((items) => new Set(items).size === items.length, {
+        message: 'Facilities must be unique',
+      })
+      .default([]),
+    description: z.string().trim().max(2000).default(''),
+    status: vehicleStatusSchema.default('AVAILABLE'),
+    featured: z.boolean().default(false),
+  })
+  .refine(({ status }) => status === 'AVAILABLE' || status !== 'RENTED', {
+    path: ['status'],
+    message: 'RENTED is derived from bookings, not set manually',
+  });
+
+export const vehicleUpdateSchema = vehicleCreateSchema.partial();
+
+export const adminVehicleSchema = z.object({
+  id: z.uuid(),
+  brand: z.string(),
+  model: z.string(),
+  variant: z.string(),
+  year: z.number().int(),
+  plate: z.string(),
+  color: z.string(),
+  transmission: vehicleTransmissionSchema,
+  category: vehicleCategorySchema,
+  fuelType: vehicleFuelTypeSchema,
+  capacity: z.number().int(),
+  luggageCount: z.number().int(),
+  mileage: z.number().int(),
+  facilities: z.array(z.string()),
+  description: z.string(),
+  status: vehicleStatusSchema,
+  featured: z.boolean(),
+  isDemo: z.boolean(),
+  dailyRate: z.number().int().nonnegative().nullable(),
+  photoCount: z.number().int().nonnegative(),
+  createdAt: isoDateTimeSchema,
+  updatedAt: isoDateTimeSchema,
+});
+
+export const vehicleListQuerySchema = z
+  .object({
+    ...paginationFields,
+    search: z.string().trim().max(80).optional(),
+    status: vehicleStatusSchema.optional(),
+    category: vehicleCategorySchema.optional(),
+    transmission: vehicleTransmissionSchema.optional(),
+    fuelType: vehicleFuelTypeSchema.optional(),
+    sort: z
+      .enum(['newest', 'oldest', 'brand', 'rate_asc', 'rate_desc', 'year_desc'])
+      .default('newest'),
+  })
+  .refine(({ page, limit }) => (page - 1) * limit <= MAX_PAGINATION_SKIP, {
+    path: ['page'],
+    message: 'Pagination offset exceeds the supported range',
+  });
+
+export const vehicleListResponseSchema = z.object({
+  vehicles: z.array(adminVehicleSchema),
+  pagination: paginationMetadataSchema,
+  counts: vehicleCountsSchema,
+});
+
+export const adminVehicleDetailSchema = adminVehicleSchema.extend({
+  photos: z.array(vehiclePhotoSchema),
+  rate: vehicleRateSchema.nullable(),
+  pricingRules: z.array(pricingRuleSchema),
+});
+
+export const vehiclePhotoUploadRequestSchema = z.strictObject({
+  files: z
+    .array(
+      z.strictObject({
+        contentType: z.enum(['image/jpeg', 'image/png']),
+        byteLength: z.number().int().min(1).max(MAX_UPLOAD_BYTES),
+      }),
+    )
+    .min(1)
+    .max(10),
+});
+
+export const vehiclePhotoUploadResponseSchema = z.object({
+  uploads: z.array(
+    z.object({
+      photoId: z.uuid(),
+      objectKey: z.string(),
+      url: z.string(),
+      expiresIn: z.number().int().positive(),
+      sortOrder: z.number().int().nonnegative(),
+    }),
+  ),
+});
+
+export const availabilityQuerySchema = z
+  .object({
+    from: isoDateTimeSchema,
+    to: isoDateTimeSchema,
+    bufferHours: z.coerce.number().int().min(0).max(72).default(0),
+  })
+  .refine(({ from, to }) => new Date(to).getTime() > new Date(from).getTime(), {
+    path: ['to'],
+    message: 'The end of the range must be after its start',
+  });
+
+export const availabilityResponseSchema = z.object({
+  from: isoDateTimeSchema,
+  to: isoDateTimeSchema,
+  bufferHours: z.number().int().nonnegative(),
+  availableVehicleIds: z.array(z.uuid()),
+});
+
 export const logoutResponseSchema = z.object({
   success: z.literal(true),
 });
@@ -214,3 +403,18 @@ export type VehicleCounts = z.infer<typeof vehicleCountsSchema>;
 export type FoundationResponse = z.infer<typeof foundationResponseSchema>;
 export type SystemResponse = z.infer<typeof systemResponseSchema>;
 export type LogoutResponse = z.infer<typeof logoutResponseSchema>;
+export type VehiclePhoto = z.infer<typeof vehiclePhotoSchema>;
+export type VehicleRate = z.infer<typeof vehicleRateSchema>;
+export type VehicleCreate = z.infer<typeof vehicleCreateSchema>;
+export type VehicleUpdate = z.infer<typeof vehicleUpdateSchema>;
+export type AdminVehicle = z.infer<typeof adminVehicleSchema>;
+export type AdminVehicleDetail = z.infer<typeof adminVehicleDetailSchema>;
+export type VehicleListQuery = z.infer<typeof vehicleListQuerySchema>;
+export type VehicleListResponse = z.infer<typeof vehicleListResponseSchema>;
+export type VehiclePhotoUploadRequest = z.infer<typeof vehiclePhotoUploadRequestSchema>;
+export type VehiclePhotoUploadResponse = z.infer<typeof vehiclePhotoUploadResponseSchema>;
+export type AvailabilityQuery = z.infer<typeof availabilityQuerySchema>;
+export type AvailabilityResponse = z.infer<typeof availabilityResponseSchema>;
+export type PricingRuleType = z.infer<typeof pricingRuleTypeSchema>;
+export type PricingRule = z.infer<typeof pricingRuleSchema>;
+export type PricingRuleCreate = z.infer<typeof pricingRuleCreateSchema>;
