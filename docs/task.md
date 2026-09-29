@@ -20,15 +20,15 @@ Urutan fase mengikuti `docs/prd.md` §13. Setiap task selesai harus punya: kode,
 
 ### 0.2 Database (`packages/db`)
 
-- [~] Prisma schema lengkap sesuai PRD §12 — schema awal admin/sesi/audit/armada/pengaturan; model booking dan operasional menyusul.
-- [~] Enum: status booking, dokumen, pembayaran, peran, status mobil — peran dan mobil sudah diimplementasikan.
-- [~] Constraint: unik plat, unik nomor invoice, index tanggal booking — plat unik dan indeks fondasi; invoice/booking belum tersedia.
+- [x] Prisma schema lengkap sesuai PRD §12 — admin/sesi/audit/armada/pengaturan + customer, booking, item, dokumen, token portal, invoice, pembayaran, pricing rules. Model operasional Fase 3 (sopir, serah-terima, refund, promo, GPS) menyusul.
+- [x] Enum: status booking, dokumen, pembayaran, peran, status mobil — kelima enum rental ditambahkan dengan nilai sesuai rules.md §3.
+- [x] Constraint: unik plat, unik nomor invoice, index tanggal booking — plus unik NIK/WhatsApp/kode booking/versi invoice, check non-negatif nominal, dan FK `ON DELETE RESTRICT` untuk booking_items→vehicles serta payments→invoices.
 - [x] Migrasi awal — diuji dari schema PostgreSQL kosong dan pemeriksaan constraint/audit.
 - [x] Seed: superadmin, 5 mobil contoh, tarif, pengaturan default — idempotent; tidak menimpa admin atau mobil yang telah diedit.
 
 ### 0.3 Shared (`packages/shared`)
 
-- [~] Zod schema untuk semua DTO API — kontrak Fase 0; endpoint fase berikutnya belum diimplementasikan.
+- [x] Zod schema untuk semua DTO API — kontrak Fase 0 + DTO rental (Customer, Booking, BookingItem, BookingDocument, Invoice, InvoiceItem, Payment, PricingRule) beserta request create; endpoint fase berikutnya belum diimplementasikan.
 - [~] Util harga: kombinasi harian/mingguan/bulanan, weekend, sopir, promo (pure function + unit test) — optimizer eksplisit tersedia; kebijakan durasi dan prioritas harga belum ditetapkan, lihat ADR 0001.
 - [x] Util tanggal WIB, format Rupiah
 - [x] Konstanta: durasi hold default, batas ukuran file, dsb
