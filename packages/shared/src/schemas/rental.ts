@@ -27,7 +27,8 @@ export const invoiceStatusSchema = z.enum([
   'VOID',
 ]);
 
-export const pricingRuleTypeSchema = z.enum(['WEEKEND', 'HOLIDAY', 'HIGH_SEASON', 'LONG_DURATION']);
+// pricingRuleTypeSchema lives in ../schemas (shared with vehicle endpoints).
+import { pricingRuleTypeSchema } from '../schemas';
 
 const moneySchema = z.number().int().nonnegative();
 const bankAccountSchema = z.record(z.string(), z.unknown());
@@ -194,7 +195,6 @@ export type BookingStatus = z.infer<typeof bookingStatusSchema>;
 export type DocumentType = z.infer<typeof documentTypeSchema>;
 export type DocumentStatus = z.infer<typeof documentStatusSchema>;
 export type InvoiceStatus = z.infer<typeof invoiceStatusSchema>;
-export type PricingRuleType = z.infer<typeof pricingRuleTypeSchema>;
 export type CustomerDto = z.infer<typeof customerDtoSchema>;
 export type BookingItemDto = z.infer<typeof bookingItemDtoSchema>;
 export type BookingDocumentDto = z.infer<typeof bookingDocumentDtoSchema>;

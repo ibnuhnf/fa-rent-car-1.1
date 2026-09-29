@@ -9,6 +9,7 @@ import {
   MAX_PAGINATION_SKIP,
   type AdminVehicleDetail,
   type VehicleCounts,
+  type VehicleCreate,
   type VehicleListQuery,
   type VehiclePhotoUploadResponse,
   type VehicleSummary,
@@ -77,9 +78,9 @@ function listOrderBy({ sort }: VehicleListQuery): Prisma.VehicleOrderByWithRelat
     case 'brand':
       return [{ brand: 'asc' }, { model: 'asc' }, { id: 'asc' }];
     case 'rate_asc':
-      return [{ rate: { daily: { sort: 'asc', nulls: 'last' } } }, { id: 'asc' }];
+      return [{ rate: { daily: 'asc' } }, { id: 'asc' }];
     case 'rate_desc':
-      return [{ rate: { daily: { sort: 'desc', nulls: 'last' } } }, { id: 'asc' }];
+      return [{ rate: { daily: 'desc' } }, { id: 'asc' }];
     case 'year_desc':
       return [{ year: 'desc' }, { id: 'asc' }];
     case 'oldest':
@@ -138,7 +139,7 @@ export class VehiclesService {
           by: ['status', 'isDemo'],
           where: { deletedAt: null },
           _count: { _all: true },
-        }),
+        } as never),
       ],
       { isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead },
     );
@@ -148,7 +149,11 @@ export class VehiclesService {
       demo: 0,
       byStatus: { AVAILABLE: 0, RENTED: 0, HELD: 0, MAINTENANCE: 0, INACTIVE: 0 },
     };
-    for (const group of groups) {
+    for (const group of groups as Array<{
+      status: VehicleCounts['byStatus'] extends Record<infer K, number> ? K : never;
+      isDemo: boolean;
+      _count: { _all: number };
+    }>) {
       const count = group._count._all;
       counts.total += count;
       counts.demo += group.isDemo ? count : 0;
@@ -227,10 +232,10 @@ export class VehiclesService {
         fixedSurcharge: rule.fixedSurcharge,
         isActive: rule.isActive,
       })),
-    } as AdminVehicleDetail;
+    } as unknown as AdminVehicleDetail;
   }
 
-  async create(input: VehicleSummary & Actor): Promise<AdminVehicleDetail> {
+  async create(input: VehicleCreate & Actor): Promise<AdminVehicleDetail> {
     assertManageableStatus(input.status);
     try {
       const vehicle = await this.database.$transaction(async (transaction) => {

@@ -251,37 +251,38 @@ export const vehiclePlateSchema = z
   .max(16)
   .regex(/^[A-Z0-9 -]+$/);
 
-export const vehicleCreateSchema = z
-  .strictObject({
-    brand: z.string().trim().min(1).max(60),
-    model: z.string().trim().min(1).max(60),
-    variant: z.string().trim().max(60).default(''),
-    year: z.number().int().min(1980).max(2100),
-    plate: vehiclePlateSchema,
-    color: z.string().trim().min(1).max(40),
-    transmission: vehicleTransmissionSchema,
-    category: vehicleCategorySchema,
-    fuelType: vehicleFuelTypeSchema,
-    capacity: z.number().int().min(1).max(60),
-    luggageCount: z.number().int().min(0).max(60),
-    mileage: z.number().int().min(0).max(2_000_000),
-    facilities: z
-      .array(z.string().trim().min(1).max(40))
-      .max(30)
-      .refine((items) => new Set(items).size === items.length, {
-        message: 'Facilities must be unique',
-      })
-      .default([]),
-    description: z.string().trim().max(2000).default(''),
-    status: vehicleStatusSchema.default('AVAILABLE'),
-    featured: z.boolean().default(false),
-  })
-  .refine(({ status }) => status === 'AVAILABLE' || status !== 'RENTED', {
-    path: ['status'],
-    message: 'RENTED is derived from bookings, not set manually',
-  });
+// Base object kept refine-free so vehicleUpdateSchema can call .partial().
+const vehicleCreateObjectSchema = z.strictObject({
+  brand: z.string().trim().min(1).max(60),
+  model: z.string().trim().min(1).max(60),
+  variant: z.string().trim().max(60).default(''),
+  year: z.number().int().min(1980).max(2100),
+  plate: vehiclePlateSchema,
+  color: z.string().trim().min(1).max(40),
+  transmission: vehicleTransmissionSchema,
+  category: vehicleCategorySchema,
+  fuelType: vehicleFuelTypeSchema,
+  capacity: z.number().int().min(1).max(60),
+  luggageCount: z.number().int().min(0).max(60),
+  mileage: z.number().int().min(0).max(2_000_000),
+  facilities: z
+    .array(z.string().trim().min(1).max(40))
+    .max(30)
+    .refine((items) => new Set(items).size === items.length, {
+      message: 'Facilities must be unique',
+    })
+    .default([]),
+  description: z.string().trim().max(2000).default(''),
+  status: vehicleStatusSchema.default('AVAILABLE'),
+  featured: z.boolean().default(false),
+});
 
-export const vehicleUpdateSchema = vehicleCreateSchema.partial();
+export const vehicleCreateSchema = vehicleCreateObjectSchema.refine(
+  ({ status }) => status === 'AVAILABLE' || status !== 'RENTED',
+  { path: ['status'], message: 'RENTED is derived from bookings, not set manually' },
+);
+
+export const vehicleUpdateSchema = vehicleCreateObjectSchema.partial();
 
 export const adminVehicleSchema = z.object({
   id: z.uuid(),

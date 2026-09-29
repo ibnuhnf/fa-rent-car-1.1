@@ -19,6 +19,9 @@ import { HealthController } from './health/health.controller';
 import { JobsService } from './jobs/jobs.service';
 import { StorageController } from './storage/storage.controller';
 import { StorageService } from './storage/storage.service';
+import { AvailabilityService } from './vehicles/availability.service';
+import { VehiclesController } from './vehicles/vehicles.controller';
+import { VehiclesService } from './vehicles/vehicles.service';
 
 @Module({
   imports: [
@@ -47,7 +50,7 @@ import { StorageService } from './storage/storage.service';
       }),
     }),
   ],
-  controllers: [AuthController, FoundationController, HealthController, StorageController],
+  controllers: [AuthController, FoundationController, HealthController, StorageController, VehiclesController],
   providers: [
     PrismaService,
     AuditService,
@@ -58,6 +61,8 @@ import { StorageService } from './storage/storage.service';
     FoundationService,
     JobsService,
     StorageService,
+    VehiclesService,
+    AvailabilityService,
     { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })
