@@ -6,6 +6,9 @@ import { ConfigService } from '@nestjs/config';
 import { MAX_UPLOAD_BYTES, SIGNED_URL_TTL_SECONDS } from '@fa/shared';
 import { z } from 'zod';
 import type { Environment } from '../config/environment';
+import { MIME_TO_EXTENSION, type AllowedMimeType } from './file-signature';
+import { requestDownloadUrlSchema, requestUploadUrlSchema } from './storage.dto';
+import { SIGNED_URL_EXPIRES_SECONDS, type StoragePurpose } from './storage.types';
 import { createStorageClient } from './storage-client';
 
 const uploadSchema = z.object({
@@ -45,6 +48,44 @@ export class StorageService implements OnModuleDestroy {
 
   async check() {
     await this.client.send(new HeadBucketCommand({ Bucket: this.bucket }));
+  }
+
+  async createUploadUrl(input: {
+    purpose: StoragePurpose;
+    contentType: AllowedMimeType;
+    sizeBytes: number;
+  }): Promise<{ uploadUrl: string; key: string; expiresInSeconds: number }> {
+    const valid = requestUploadUrlSchema.parse(input);
+    const ext = MIME_TO_EXTENSION[valid.contentType];
+    const key = `${valid.purpose}/${randomUUID()}.${ext}`;
+    const uploadUrl = await getSignedUrl(
+      this.client,
+      new PutObjectCommand({
+        Bucket: this.bucket,
+        Key: key,
+        ContentType: valid.contentType,
+        ContentLength: valid.sizeBytes,
+      }),
+      { expiresIn: SIGNED_URL_EXPIRES_SECONDS },
+    );
+    return { uploadUrl, key, expiresInSeconds: SIGNED_URL_EXPIRES_SECONDS };
+  }
+
+  async createDownloadUrl(
+    keyInput: string | { key: string },
+  ): Promise<{ downloadUrl: string; expiresInSeconds: number }> {
+    const rawKey = typeof keyInput === 'string' ? keyInput : keyInput.key;
+    const valid = requestDownloadUrlSchema.parse({ key: rawKey });
+    const downloadUrl = await getSignedUrl(
+      this.client,
+      new GetObjectCommand({
+        Bucket: this.bucket,
+        Key: valid.key,
+        ResponseContentDisposition: 'attachment',
+      }),
+      { expiresIn: SIGNED_URL_EXPIRES_SECONDS },
+    );
+    return { downloadUrl, expiresInSeconds: SIGNED_URL_EXPIRES_SECONDS };
   }
 
   // Staging only: domain uploads must inspect bytes before accepting a document.

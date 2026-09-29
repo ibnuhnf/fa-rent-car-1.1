@@ -39,7 +39,7 @@ Urutan fase mengikuti `docs/prd.md` §13. Setiap task selesai harus punya: kode,
 - [x] Prisma service, health check
 - [x] Auth admin: login, refresh, logout, hash bcrypt — termasuk rotasi/replay, race logout/refresh, pencabutan user, dan koordinasi antartab.
 - [x] RBAC guard: `staff`, `superadmin`
-- [~] Modul storage: upload signed URL, akses privat — staging privat; endpoint upload domain dan pemeriksaan isi file belum diaktifkan.
+- [x] Modul storage: upload signed URL, akses privat — endpoint admin (upload URL & download URL) aktif dengan validasi MIME allowlist, batas 5 MB, verifikasi magic bytes, dan signed URL <= 10 menit.
 - [x] Modul audit log (service dalam transaksi untuk aksi sensitif; metadata request tanpa data pribadi), lihat ADR 0002.
 - [x] BullMQ + Redis: queue dasar, scheduler — job expiry booking belum tersedia sebelum Fase 1.
 - [x] Error format seragam, logging, rate limit

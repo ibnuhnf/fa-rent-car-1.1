@@ -57,3 +57,76 @@ describe('private staging storage', () => {
     expect(() => assertObjectOwnership(ownerId, 'other/private.pdf')).toThrow();
   });
 });
+
+describe('admin storage signed URLs', () => {
+  it('createUploadUrl returns a purpose-prefixed UUID key with the verified extension', async () => {
+    const storage = service();
+    try {
+      const result = await storage.createUploadUrl({
+        purpose: 'ktp',
+        contentType: 'image/png',
+        sizeBytes: 42,
+      });
+      expect(result.key).toMatch(/^ktp\/[a-f0-9-]{36}\.png$/);
+      expect(result.expiresInSeconds).toBe(600);
+      expect(new URL(result.uploadUrl).searchParams.get('X-Amz-Expires')).toBe('600');
+    } finally {
+      storage.onModuleDestroy();
+    }
+  });
+
+  it('createDownloadUrl issues a signed URL whose expiry stays within the limit', async () => {
+    const storage = service();
+    try {
+      const key = `sim/${randomUUID()}.pdf`;
+      const result = await storage.createDownloadUrl(key);
+      expect(new URL(result.downloadUrl).searchParams.get('X-Amz-Expires')).toBe('600');
+      expect(result.expiresInSeconds).toBeLessThanOrEqual(600);
+    } finally {
+      storage.onModuleDestroy();
+    }
+  });
+
+  it('derives the key extension from the allowlisted MIME, not from client input', async () => {
+    const storage = service();
+    try {
+      for (const [contentType, ext] of [
+        ['image/jpeg', 'jpg'],
+        ['image/webp', 'webp'],
+        ['application/pdf', 'pdf'],
+      ] as const) {
+        const result = await storage.createUploadUrl({
+          purpose: 'payment_proof',
+          contentType,
+          sizeBytes: 1024,
+        });
+        expect(result.key).toMatch(new RegExp(`^payment_proof/[a-f0-9-]{36}\\.${ext}$`));
+      }
+    } finally {
+      storage.onModuleDestroy();
+    }
+  });
+
+  it('rejects disallowed MIME types and oversized payloads', async () => {
+    const storage = service();
+    try {
+      await expect(
+        storage.createUploadUrl({
+          purpose: 'ktp',
+          contentType: 'image/gif' as never,
+          sizeBytes: 10,
+        }),
+      ).rejects.toThrow();
+      await expect(
+        storage.createUploadUrl({
+          purpose: 'ktp',
+          contentType: 'image/png',
+          sizeBytes: 5 * 1024 * 1024 + 1,
+        }),
+      ).rejects.toThrow();
+      await expect(storage.createDownloadUrl('')).rejects.toThrow();
+    } finally {
+      storage.onModuleDestroy();
+    }
+  });
+});

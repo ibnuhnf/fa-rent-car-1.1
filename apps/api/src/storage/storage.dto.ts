@@ -13,8 +13,27 @@ export const requestUploadUrlSchema = z
 
 export const requestDownloadUrlSchema = z.object({ key: z.string().min(1) }).strict();
 
+export const uploadUrlResponseSchema = z
+  .object({
+    uploadUrl: z.string().url(),
+    key: z.string().min(1),
+    expiresInSeconds: z.number().int().positive(),
+  })
+  .strict();
+
+export const downloadUrlResponseSchema = z
+  .object({
+    downloadUrl: z.string().url(),
+    expiresInSeconds: z.number().int().positive(),
+  })
+  .strict();
+
 export class RequestUploadUrlDto extends createZodDto(requestUploadUrlSchema) {}
 export class RequestDownloadUrlDto extends createZodDto(requestDownloadUrlSchema) {}
+export class UploadUrlResponseDto extends createZodDto(uploadUrlResponseSchema) {}
+export class DownloadUrlResponseDto extends createZodDto(downloadUrlResponseSchema) {}
 
 export type RequestUploadUrl = z.infer<typeof requestUploadUrlSchema>;
 export type RequestDownloadUrl = z.infer<typeof requestDownloadUrlSchema>;
+export type UploadUrlResponse = z.infer<typeof uploadUrlResponseSchema>;
+export type DownloadUrlResponse = z.infer<typeof downloadUrlResponseSchema>;

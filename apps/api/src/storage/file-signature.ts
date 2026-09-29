@@ -7,6 +7,14 @@ export const ALLOWED_MIME_TYPES = [
 
 export type AllowedMimeType = (typeof ALLOWED_MIME_TYPES)[number];
 
+// Mirror of verifyFileSignature: extension is derived from the verified MIME, never from a client filename.
+export const MIME_TO_EXTENSION: Readonly<Record<AllowedMimeType, string>> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'application/pdf': 'pdf',
+};
+
 export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 
 export function verifyFileSignature(buffer: Buffer, expectedMime: string): boolean {

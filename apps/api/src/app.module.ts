@@ -17,6 +17,7 @@ import { FoundationController } from './foundation/foundation.controller';
 import { FoundationService } from './foundation/foundation.service';
 import { HealthController } from './health/health.controller';
 import { JobsService } from './jobs/jobs.service';
+import { StorageController } from './storage/storage.controller';
 import { StorageService } from './storage/storage.service';
 
 @Module({
@@ -46,7 +47,7 @@ import { StorageService } from './storage/storage.service';
       }),
     }),
   ],
-  controllers: [AuthController, FoundationController, HealthController],
+  controllers: [AuthController, FoundationController, HealthController, StorageController],
   providers: [
     PrismaService,
     AuditService,
