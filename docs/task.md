@@ -102,7 +102,7 @@ Urutan fase mengikuti `docs/prd.md` §13. Setiap task selesai harus punya: kode,
 
 ### 2.1 Publik
 
-- [ ] Landing page (ref: design.md §9 beranda)
+- [x] Landing page (ref: design.md §9 beranda) — armada statis dari design-reference; akan diganti API publik (baris berikut) setelah tersedia. Lihat commit 6f7241c.
 - [ ] API publik: daftar mobil tersedia + filter + urut
 - [ ] Halaman pencarian & katalog + filter
 - [ ] Detail mobil (galeri, spesifikasi, tarif, kalender)
