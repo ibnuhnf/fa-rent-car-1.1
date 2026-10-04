@@ -6,7 +6,9 @@ import {
   availabilityResponseSchema,
   pricingRuleCreateSchema,
   pricingRuleSchema,
+  vehicleCountsSchema,
   vehicleCreateSchema,
+  vehicleListQuerySchema,
   vehicleListResponseSchema,
   vehiclePhotoUploadRequestSchema,
   vehiclePhotoUploadResponseSchema,
@@ -14,11 +16,9 @@ import {
   vehicleUpdateSchema,
 } from '@fa/shared';
 
-// Upsert shares one DTO class for create and update: the service validates the
-// exact shape per operation via the shared Zod schemas.
-export class VehicleUpsertDto extends createZodDto(vehicleCreateSchema) {}
 export class VehicleCreateDto extends createZodDto(vehicleCreateSchema) {}
 export class VehicleUpdateDto extends createZodDto(vehicleUpdateSchema) {}
+export class VehicleListQueryDto extends createZodDto(vehicleListQuerySchema) {}
 export class VehiclePhotoUploadDto extends createZodDto(vehiclePhotoUploadRequestSchema) {}
 export class AvailabilityQueryDto extends createZodDto(availabilityQuerySchema) {}
 export class PricingRuleCreateDto extends createZodDto(pricingRuleCreateSchema) {}
@@ -32,4 +32,4 @@ export class VehiclePhotoUploadResponseDto extends createZodDto(
 ) {}
 export class AvailabilityResponseDto extends createZodDto(availabilityResponseSchema) {}
 export class PricingRuleDto extends createZodDto(pricingRuleSchema) {}
-export class VehicleCountsDto extends createZodDto(adminVehicleDetailSchema) {}
+export class VehicleCountsDto extends createZodDto(vehicleCountsSchema) {}

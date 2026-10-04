@@ -11,6 +11,8 @@ import { AuthService } from './auth/auth.service';
 import { CsrfGuard } from './auth/csrf.guard';
 import { loginTracker } from './auth/login-throttle';
 import { RolesGuard } from './auth/roles.guard';
+import { BookingsController } from './bookings/bookings.controller';
+import { BookingsService } from './bookings/bookings.service';
 import { validateEnvironment, type Environment } from './config/environment';
 import { PrismaService } from './database/prisma.service';
 import { FoundationController } from './foundation/foundation.controller';
@@ -50,7 +52,14 @@ import { VehiclesService } from './vehicles/vehicles.service';
       }),
     }),
   ],
-  controllers: [AuthController, FoundationController, HealthController, StorageController, VehiclesController],
+  controllers: [
+    AuthController,
+    BookingsController,
+    FoundationController,
+    HealthController,
+    StorageController,
+    VehiclesController,
+  ],
   providers: [
     PrismaService,
     AuditService,
@@ -63,6 +72,7 @@ import { VehiclesService } from './vehicles/vehicles.service';
     StorageService,
     VehiclesService,
     AvailabilityService,
+    BookingsService,
     { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })

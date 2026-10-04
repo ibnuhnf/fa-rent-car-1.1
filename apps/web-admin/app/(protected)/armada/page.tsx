@@ -1,9 +1,14 @@
-import { paginationSchema } from '@fa/shared';
-import { Badge, Button, ButtonLink, Card, Icon, Input } from '@fa/ui';
+import {
+  vehicleListQuerySchema,
+  type VehicleListQuery,
+} from '@fa/shared';
+import { Badge, Button, ButtonLink, Card, Input } from '@fa/ui';
 import { notFound } from 'next/navigation';
 
 import { FleetList } from '../../../components/FleetList';
-import { getFoundation } from '../../../lib/server-api';
+import { FleetToolbar } from '../../../components/FleetToolbar';
+import { requireAdminSession } from '../../../lib/server-api';
+import { listVehicles } from '../../../lib/server-fleet';
 
 export const metadata = {
   title: 'Manajemen Armada',
@@ -14,18 +19,29 @@ interface FleetPageProps {
 }
 
 export default async function FleetPage({ searchParams }: FleetPageProps) {
-  const query = paginationSchema.safeParse(await searchParams);
-  if (!query.success) notFound();
+  const session = await requireAdminSession();
+  const parsed = vehicleListQuerySchema.safeParse(await searchParams);
+  if (!parsed.success) notFound();
+  const query: VehicleListQuery = parsed.data;
 
-  const foundation = await getFoundation(query.data);
-  const { pagination } = foundation;
-  if (pagination.page > 1 && foundation.vehicles.length === 0) notFound();
+  const { vehicles, pagination } = await listVehicles(query);
+  if (pagination.page > 1 && vehicles.length === 0) notFound();
 
-  const hasDemoVehicles = foundation.vehicleCounts.demo > 0;
-  const firstVehicle =
-    foundation.vehicles.length > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0;
-  const lastVehicle = firstVehicle > 0 ? firstVehicle + foundation.vehicles.length - 1 : 0;
-  const pageUrl = (page: number) => `/armada?page=${page}&limit=${pagination.limit}`;
+  const superadmin = session.user.role === 'SUPERADMIN';
+  const firstVehicle = vehicles.length > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0;
+  const lastVehicle = firstVehicle > 0 ? firstVehicle + vehicles.length - 1 : 0;
+  const pageUrl = (page: number) => {
+    const params = new URLSearchParams();
+    params.set('page', String(page));
+    params.set('limit', String(query.limit));
+    if (query.search) params.set('search', query.search);
+    if (query.status) params.set('status', query.status);
+    if (query.category) params.set('category', query.category);
+    if (query.transmission) params.set('transmission', query.transmission);
+    if (query.fuelType) params.set('fuelType', query.fuelType);
+    params.set('sort', query.sort);
+    return `/armada?${params.toString()}`;
+  };
 
   return (
     <div className="space-y-6 lg:space-y-8">
@@ -33,33 +49,22 @@ export default async function FleetPage({ searchParams }: FleetPageProps) {
         <div>
           <div className="flex flex-wrap gap-2">
             <Badge dot tone="info">
-              Fondasi sistem
+              Fase 1
             </Badge>
-            {hasDemoVehicles ? <Badge tone="warning">Data contoh</Badge> : null}
+            {superadmin ? <Badge tone="success">Mode superadmin</Badge> : null}
           </div>
           <h1 className="mt-4 font-display text-headline-lg-mobile tracking-[-0.02em] text-on-surface sm:text-headline-lg">
             Manajemen Armada
           </h1>
           <p className="mt-2 max-w-2xl text-body-md text-on-surface-variant">
-            Daftar baca-saja dari endpoint fondasi. Penambahan, perubahan, tarif, dan foto armada
-            tersedia pada Fase 1.
+            Kelola unit armada, tarif harian, dan status ketersediaan dari endpoint admin Fase 1.
           </p>
         </div>
       </section>
 
-      {hasDemoVehicles ? (
-        <Card className="flex items-start gap-3" padding="sm" tone="warning">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-surface-lowest text-on-warning-container">
-            <Icon name="science" size="md" />
-          </span>
-          <p className="text-body-md text-on-warning-container">
-            Armada bertanda data contoh berasal dari seed pengembangan. Tarif contoh bukan informasi
-            ketersediaan atau penawaran bisnis saat ini.
-          </p>
-        </Card>
-      ) : null}
+      <FleetToolbar query={query} superadmin={superadmin} />
 
-      <FleetList vehicles={foundation.vehicles} />
+      <FleetList superadmin={superadmin} vehicles={vehicles} />
 
       <Card padding="sm">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -68,6 +73,14 @@ export default async function FleetPage({ searchParams }: FleetPageProps) {
           </p>
           <form action="/armada" className="flex flex-wrap items-end gap-2" method="get">
             <input name="page" type="hidden" value="1" />
+            {query.search ? <input name="search" type="hidden" value={query.search} /> : null}
+            {query.status ? <input name="status" type="hidden" value={query.status} /> : null}
+            {query.category ? <input name="category" type="hidden" value={query.category} /> : null}
+            {query.transmission ? (
+              <input name="transmission" type="hidden" value={query.transmission} />
+            ) : null}
+            {query.fuelType ? <input name="fuelType" type="hidden" value={query.fuelType} /> : null}
+            <input name="sort" type="hidden" value={query.sort} />
             <Input
               containerClassName="w-44"
               defaultValue={pagination.limit}

@@ -58,12 +58,12 @@ Urutan fase mengikuti `docs/prd.md` §13. Setiap task selesai harus punya: kode,
 
 ### 1.1 Armada
 
-- [ ] API CRUD vehicle + foto (multi upload, urutan)
-- [ ] API tarif per mobil (harian/mingguan/bulanan/sopir/overtime/keterlambatan)
-- [ ] API pricing rules (weekend/musim liburan)
-- [ ] API ketersediaan: `GET /availability?from&to` (anti double-booking, buffer)
-- [ ] UI daftar mobil, form tambah/ubah, galeri foto, status
-- [ ] UI tarif per mobil
+- [x] API CRUD vehicle + foto (multi upload, urutan) — `VehiclesController` + `VehiclesService.stagePhotos/deletePhoto` + `StorageService.createStagingUpload`, audit `VEHICLE_*`. Lihat `f735137`.
+- [x] API tarif per mobil (harian/mingguan/bulanan/sopir/overtime/keterlambatan) — `PUT /admin/vehicles/:id/rate` + `VehicleRate` (daily/weekly/monthly/driverPerDay/overtimeHourly/latePerDay).
+- [x] API pricing rules (weekend/musim liburan) — `GET|POST /admin/vehicles/:id/pricing-rules`, `PricingRuleCreate` (multiplier XOR surcharge).
+- [x] API ketersediaan: `GET /availability?from&to` (anti double-booking, buffer) — `GET /admin/vehicles/availability` via `AvailabilityService.blockedVehicleItemsWhere` (RepeatableRead, `bufferHours`).
+- [x] UI daftar mobil, form tambah/ubah, galeri foto, status — `armada/page.tsx` (list+filter/sort+pagination), `armada/baru/page.tsx`+`VehicleCreateForm`, `armada/[id]/VehicleDetailView` (status toggle AVAILABLE↔MAINTENANCE, galeri upload/delete via signed URL, `superadmin` guard).
+- [x] UI tarif per mobil — form tarif di `VehicleDetailView` (`PUT /rate`, validasi `vehicleRateSchema`).
 - [ ] Kalender ketersediaan (per mobil & gabungan)
 
 ### 1.2 Booking manual

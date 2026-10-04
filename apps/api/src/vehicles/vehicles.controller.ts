@@ -8,9 +8,11 @@ import { AvailabilityService } from './availability.service';
 import {
   AvailabilityQueryDto,
   PricingRuleCreateDto,
-  VehicleUpsertDto,
+  VehicleCreateDto,
+  VehicleListQueryDto,
   VehiclePhotoUploadDto,
   VehicleRateDto,
+  VehicleUpdateDto,
 } from './vehicles.dto';
 import { VehiclesService } from './vehicles.service';
 
@@ -38,8 +40,8 @@ export class VehiclesController {
   }
 
   @Get()
-  list(@Query() query: VehicleUpsertDto) {
-    return this.vehicles.list(query as unknown as Parameters<VehiclesService['list']>[0]);
+  list(@Query() query: VehicleListQueryDto) {
+    return this.vehicles.list(query);
   }
 
   @Get(':id')
@@ -49,14 +51,14 @@ export class VehiclesController {
 
   @Post()
   @Roles('SUPERADMIN')
-  async create(@Body() body: VehicleUpsertDto, @CurrentAdmin() admin: AuthenticatedAdmin) {
-    return this.vehicles.create({ ...(body as VehicleUpsertDto), actorId: admin.user.id });
+  async create(@Body() body: VehicleCreateDto, @CurrentAdmin() admin: AuthenticatedAdmin) {
+    return this.vehicles.create({ ...body, actorId: admin.user.id });
   }
 
   @Patch(':id')
   @Roles('SUPERADMIN')
-  async update(@Param('id') id: string, @Body() body: VehicleUpsertDto, @CurrentAdmin() admin: AuthenticatedAdmin) {
-    return this.vehicles.update(id, { ...(body as VehicleUpsertDto), actorId: admin.user.id });
+  async update(@Param('id') id: string, @Body() body: VehicleUpdateDto, @CurrentAdmin() admin: AuthenticatedAdmin) {
+    return this.vehicles.update(id, { ...body, actorId: admin.user.id });
   }
 
   @Delete(':id')

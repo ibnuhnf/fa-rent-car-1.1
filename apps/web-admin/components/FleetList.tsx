@@ -3,13 +3,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { formatRupiah, type VehicleSummary } from '@fa/shared';
-import { Badge, Button, Card, EmptyState, Input, Table, type TableColumn } from '@fa/ui';
+import { Badge, Button, ButtonLink, Card, EmptyState, Input, Table, type TableColumn } from '@fa/ui';
 
 import { vehicleDetail, vehicleName, vehicleStatusMeta } from '../lib/foundation';
 import { useHydrated } from '../lib/use-hydrated';
 
 interface FleetListProps {
   vehicles: ReadonlyArray<VehicleSummary>;
+  superadmin?: boolean;
 }
 
 function vehicleSearchText(vehicle: VehicleSummary): string {
@@ -57,7 +58,7 @@ function VehiclePlaceholder({ vehicle }: { vehicle: VehicleSummary }) {
   );
 }
 
-export function FleetList({ vehicles }: FleetListProps) {
+export function FleetList({ vehicles, superadmin = false }: FleetListProps) {
   const hydrated = useHydrated();
   const searchRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState('');
@@ -137,6 +138,15 @@ export function FleetList({ vehicles }: FleetListProps) {
       header: 'Tarif',
       render: (vehicle) => <DailyRate vehicle={vehicle} />,
     },
+    {
+      key: 'action',
+      header: 'Aksi',
+      render: (vehicle) => (
+        <ButtonLink href={`/armada/${vehicle.id}`} size="sm" variant="outline">
+          Detail
+        </ButtonLink>
+      ),
+    },
   ];
 
   return (
@@ -154,9 +164,15 @@ export function FleetList({ vehicles }: FleetListProps) {
           type="search"
           value={query}
         />
-        <Button disabled icon="add" variant="primary">
-          Tambah mobil · Fase 1
-        </Button>
+        {superadmin ? (
+          <ButtonLink href="/armada/baru" icon="add" variant="secondary">
+            Tambah mobil
+          </ButtonLink>
+        ) : (
+          <Button disabled icon="add" variant="primary">
+            Tambah mobil · Perlu Superadmin
+          </Button>
+        )}
       </div>
 
       <p aria-live="polite" className="text-caption text-on-surface-variant">
@@ -193,8 +209,11 @@ export function FleetList({ vehicles }: FleetListProps) {
                       {vehicle.transmission === 'AUTOMATIC' ? 'Matic' : 'Manual'} ·{' '}
                       {vehicle.capacity} kursi · {vehicle.luggageCount} koper
                     </p>
-                    <div className="mt-4">
+                    <div className="mt-4 flex items-center justify-between gap-3">
                       <DailyRate vehicle={vehicle} />
+                      <ButtonLink href={`/armada/${vehicle.id}`} size="sm" variant="outline">
+                        Detail
+                      </ButtonLink>
                     </div>
                   </div>
                 </div>

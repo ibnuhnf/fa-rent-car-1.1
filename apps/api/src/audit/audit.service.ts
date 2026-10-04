@@ -18,7 +18,22 @@ export type VehicleAuditAction =
 
 export type StorageAuditAction = 'STORAGE_UPLOAD_URL_ISSUED' | 'STORAGE_DOWNLOAD_URL_ISSUED';
 
-export type AuditAction = AuthAuditAction | VehicleAuditAction;
+export type BookingAuditAction =
+  | 'BOOKING_CREATED'
+  | 'BOOKING_HOLD_EXTENDED'
+  | 'BOOKING_EXPIRED';
+
+export type AuditAction = AuthAuditAction | VehicleAuditAction | BookingAuditAction;
+
+export interface BookingAuditEvent {
+  actorId: string | null;
+  action: BookingAuditAction;
+  objectId: string;
+  before?: Prisma.InputJsonObject;
+  after?: Prisma.InputJsonObject;
+}
+
+export const BOOKING_OBJECT_TYPE = 'BOOKING';
 
 export interface AuthAuditEvent {
   actorId: string;
@@ -56,7 +71,7 @@ export class AuditService {
   private append(
     transaction: Prisma.TransactionClient,
     objectType: string,
-    event: AuthAuditEvent | VehicleAuditEvent | StorageAuditEvent,
+    event: AuthAuditEvent | VehicleAuditEvent | StorageAuditEvent | BookingAuditEvent,
   ): Promise<AuditLog> {
     return transaction.auditLog.create({
       data: { ...event, objectType },
@@ -76,5 +91,12 @@ export class AuditService {
 
   recordStorage(transaction: Prisma.TransactionClient, event: StorageAuditEvent): Promise<AuditLog> {
     return this.append(transaction, AUDIT_OBJECT_TYPES.STORAGE_OBJECT, event);
+  }
+
+  recordBooking(
+    transaction: Prisma.TransactionClient,
+    event: BookingAuditEvent,
+  ): Promise<AuditLog> {
+    return this.append(transaction, BOOKING_OBJECT_TYPE, event);
   }
 }

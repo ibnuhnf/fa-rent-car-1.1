@@ -191,6 +191,99 @@ export const createPaymentRequestSchema = z
   })
   .strict();
 
+const listPaginationFields = {
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+};
+
+export const bookingListQuerySchema = z
+  .object({
+    ...listPaginationFields,
+    status: bookingStatusSchema.optional(),
+    search: z.string().trim().max(80).optional(),
+    customerId: z.uuid().optional(),
+    vehicleId: z.uuid().optional(),
+    from: isoDateTimeSchema.optional(),
+    to: isoDateTimeSchema.optional(),
+    sort: z.enum(['newest', 'oldest', 'hold_asc']).default('newest'),
+  })
+  .strict()
+  .refine(({ from, to }) => from === undefined || to === undefined || new Date(to) > new Date(from), {
+    path: ['to'],
+    message: 'to must be after from',
+  });
+
+// Ringkasan list sengaja tidak membawa snapshot item penuh.
+export const bookingSummarySchema = z.object({
+  id: z.uuid(),
+  bookingCode: bookingCodeSchema,
+  status: bookingStatusSchema,
+  holdExpiresAt: isoDateTimeSchema,
+  customerId: z.uuid(),
+  customerName: z.string(),
+  customerWhatsapp: whatsappSchema,
+  itemCount: z.number().int().positive(),
+  totalAmount: moneySchema,
+  invoiceNumber: invoiceNumberSchema.nullable(),
+  invoiceStatus: invoiceStatusSchema.nullable(),
+  createdAt: isoDateTimeSchema,
+  updatedAt: isoDateTimeSchema,
+});
+
+export const bookingListResponseSchema = z.object({
+  bookings: z.array(bookingSummarySchema),
+  pagination: z.object({
+    page: z.number().int().positive(),
+    limit: z.number().int().positive(),
+    total: z.number().int().nonnegative(),
+    totalPages: z.number().int().nonnegative(),
+    hasPreviousPage: z.boolean(),
+    hasNextPage: z.boolean(),
+  }),
+});
+
+export const bookingTimelineEntrySchema = z.object({
+  id: z.uuid(),
+  action: z.string(),
+  actorId: z.uuid().nullable(),
+  actorName: z.string().nullable(),
+  before: z.record(z.string(), z.unknown()).nullable(),
+  after: z.record(z.string(), z.unknown()).nullable(),
+  createdAt: isoDateTimeSchema,
+});
+
+export const bookingDetailResponseSchema = z.object({
+  booking: bookingDtoSchema,
+  customer: customerDtoSchema,
+  invoices: z.array(invoiceDtoSchema),
+  timeline: z.array(bookingTimelineEntrySchema),
+});
+
+export const createBookingResponseSchema = z.object({
+  booking: bookingDtoSchema,
+  invoice: invoiceDtoSchema,
+});
+
+export const extendHoldRequestSchema = z
+  .object({
+    minutes: z.number().int().min(15).max(24 * 60),
+  })
+  .strict();
+
+export const extendHoldResponseSchema = z.object({
+  id: z.uuid(),
+  holdExpiresAt: isoDateTimeSchema,
+});
+
+export type BookingListQuery = z.infer<typeof bookingListQuerySchema>;
+export type BookingSummary = z.infer<typeof bookingSummarySchema>;
+export type BookingListResponse = z.infer<typeof bookingListResponseSchema>;
+export type BookingTimelineEntry = z.infer<typeof bookingTimelineEntrySchema>;
+export type BookingDetailResponse = z.infer<typeof bookingDetailResponseSchema>;
+export type CreateBookingResponse = z.infer<typeof createBookingResponseSchema>;
+export type ExtendHoldRequest = z.infer<typeof extendHoldRequestSchema>;
+export type ExtendHoldResponse = z.infer<typeof extendHoldResponseSchema>;
+
 export type BookingStatus = z.infer<typeof bookingStatusSchema>;
 export type DocumentType = z.infer<typeof documentTypeSchema>;
 export type DocumentStatus = z.infer<typeof documentStatusSchema>;
