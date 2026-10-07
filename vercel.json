@@ -2,8 +2,9 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "services": {
     "api": {
-      "root": "apps/api",
-      "runtime": "container"
+      "root": ".",
+      "runtime": "container",
+      "entrypoint": "Dockerfile.api"
     },
     "web-admin": {
       "root": "apps/web-admin",
