@@ -1,0 +1,59 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "api": {
+      "root": "apps/api",
+      "runtime": "container"
+    },
+    "web-admin": {
+      "root": "apps/web-admin",
+      "framework": "nextjs",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "api",
+          "format": "url",
+          "env": "API_INTERNAL_URL"
+        }
+      ]
+    },
+    "web-customer": {
+      "root": "apps/web-customer",
+      "framework": "nextjs",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "api",
+          "format": "url",
+          "env": "API_INTERNAL_URL"
+        }
+      ]
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": {
+        "service": "api"
+      }
+    },
+    {
+      "source": "/admin",
+      "destination": {
+        "service": "web-admin"
+      }
+    },
+    {
+      "source": "/admin/:path*",
+      "destination": {
+        "service": "web-admin"
+      }
+    },
+    {
+      "source": "/:path*",
+      "destination": {
+        "service": "web-customer"
+      }
+    }
+  ]
+}
