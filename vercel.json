@@ -35,25 +35,29 @@
     {
       "source": "/api/:path*",
       "destination": {
-        "service": "api"
+        "service": "api",
+        "path": "/api/:path*"
       }
     },
     {
       "source": "/admin",
       "destination": {
-        "service": "web-admin"
+        "service": "web-admin",
+        "path": "/admin"
       }
     },
     {
       "source": "/admin/:path*",
       "destination": {
-        "service": "web-admin"
+        "service": "web-admin",
+        "path": "/admin/:path*"
       }
     },
     {
       "source": "/:path*",
       "destination": {
-        "service": "web-customer"
+        "service": "web-customer",
+        "path": "/:path*"
       }
     }
   ]
