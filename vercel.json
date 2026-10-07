@@ -33,31 +33,27 @@
   },
   "rewrites": [
     {
-      "source": "/api/:path*",
+      "source": "/api/(.*)",
       "destination": {
-        "service": "api",
-        "path": "/api/:path*"
+        "service": "api"
       }
     },
     {
       "source": "/admin",
       "destination": {
-        "service": "web-admin",
-        "path": "/admin"
+        "service": "web-admin"
       }
     },
     {
-      "source": "/admin/:path*",
+      "source": "/admin/(.*)",
       "destination": {
-        "service": "web-admin",
-        "path": "/admin/:path*"
+        "service": "web-admin"
       }
     },
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "destination": {
-        "service": "web-customer",
-        "path": "/:path*"
+        "service": "web-customer"
       }
     }
   ]
