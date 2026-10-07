@@ -2,17 +2,29 @@
 
 import {
   ApiError,
+  adminPaymentResponseSchema,
   apiErrorSchema,
   bookingDetailResponseSchema,
   bookingListResponseSchema,
+  cancelBookingResponseSchema,
+  bookingRevisionResponseSchema,
   createApiClient,
   createBookingResponseSchema,
   csrfResponseSchema,
   extendHoldResponseSchema,
+  verifyDocumentResponseSchema,
+  type AdminCreatePaymentRequest,
+  type AdminPaymentResponse,
   type BookingDetailResponse,
   type BookingListResponse,
+  type BookingRevisionResponse,
+  type CancelBookingRequest,
+  type CancelBookingResponse,
   type CreateBookingRequest,
   type CreateBookingResponse,
+  type UpdateBookingItemRequest,
+  type VerifyDocumentRequest,
+  type VerifyDocumentResponse,
 } from '@fa/shared';
 
 const client = createApiClient({ baseUrl: '/api/v1' });
@@ -47,7 +59,6 @@ async function withCsrf<T>(run: (csrfToken: string) => Promise<T>): Promise<T> {
   }
 }
 
-/** Ubah error API jadi pesan Bahasa Indonesia untuk ditampilkan di form. */
 export function describeBookingError(error: unknown): string {
   if (error instanceof ApiError) {
     if (error.kind === 'network') return 'Tidak dapat menjangkau server. Periksa koneksi Anda.';
@@ -55,12 +66,11 @@ export function describeBookingError(error: unknown): string {
   }
 
   if (error instanceof Error && error.message) {
-    // Server action membungkus bentuk respons API sebagai JSON string.
     try {
       const parsed = apiErrorSchema.safeParse(JSON.parse(error.message));
       if (parsed.success) return parsed.data.error.message;
     } catch {
-      // Bukan JSON; lanjut ke pesan default.
+      // Bukan JSON; lanjut ke default.
     }
     return error.message;
   }
@@ -109,4 +119,62 @@ export async function listBookings(
     if (value !== undefined && value !== '') params.set(key, String(value));
   }
   return client.get(`/admin/bookings?${params.toString()}`, bookingListResponseSchema);
+}
+
+export async function verifyDocument(
+  bookingId: string,
+  docId: string,
+  input: VerifyDocumentRequest,
+): Promise<VerifyDocumentResponse> {
+  return withCsrf((csrfToken) =>
+    client.post(
+      `/admin/bookings/${bookingId}/documents/${docId}/verify`,
+      input,
+      verifyDocumentResponseSchema,
+      { headers: { 'X-CSRF-Token': csrfToken } },
+    ),
+  );
+}
+
+export async function createPayment(
+  bookingId: string,
+  input: AdminCreatePaymentRequest,
+): Promise<AdminPaymentResponse> {
+  return withCsrf((csrfToken) =>
+    client.post(
+      `/admin/bookings/${bookingId}/payments`,
+      input,
+      adminPaymentResponseSchema,
+      { headers: { 'X-CSRF-Token': csrfToken } },
+    ),
+  );
+}
+
+export async function cancelBooking(
+  bookingId: string,
+  input: CancelBookingRequest,
+): Promise<CancelBookingResponse> {
+  return withCsrf((csrfToken) =>
+    client.post(
+      `/admin/bookings/${bookingId}/cancel`,
+      input,
+      cancelBookingResponseSchema,
+      { headers: { 'X-CSRF-Token': csrfToken } },
+    ),
+  );
+}
+
+export async function updateBookingItem(
+  bookingId: string,
+  itemId: string,
+  input: UpdateBookingItemRequest,
+): Promise<BookingRevisionResponse> {
+  return withCsrf((csrfToken) =>
+    client.patch(
+      `/admin/bookings/${bookingId}/items/${itemId}`,
+      input,
+      bookingRevisionResponseSchema,
+      { headers: { 'X-CSRF-Token': csrfToken } },
+    ),
+  );
 }

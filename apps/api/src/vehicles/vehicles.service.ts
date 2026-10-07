@@ -16,9 +16,12 @@ import {
   type VehicleUpdate,
 } from '@fa/shared';
 import type { AuthenticatedAdmin } from '../auth/auth.types';
+import { csvString } from '../exports/csv-export.helper';
 import { AuditService } from '../audit/audit.service';
 import { PrismaService } from '../database/prisma.service';
 import { StorageService } from '../storage/storage.service';
+
+const CSV_HEADERS = ['id', 'brand', 'model', 'variant', 'plate', 'year', 'category', 'transmission', 'fuelType', 'status', 'mileage', 'dailyRate'];
 
 type VehicleWithRate = Prisma.VehicleGetPayload<{ include: { rate: true } }>;
 
@@ -121,6 +124,14 @@ export class VehiclesService {
     });
     if (!vehicle) throw notFound();
     return vehicle;
+  }
+
+  async exportCsv(): Promise<string> {
+    const response = await this.list({ sort: 'newest', page: 1, limit: 10000 });
+    const rows: Array<Array<string | number>> = [CSV_HEADERS, ...response.vehicles.map((v) => [
+      v.id, v.brand, v.model, v.variant, v.plate, v.year, v.category, v.transmission, v.fuelType, v.status, v.mileage, v.rate?.daily ?? 0,
+    ])];
+    return csvString(rows);
   }
 
   async list(query: VehicleListQuery) {

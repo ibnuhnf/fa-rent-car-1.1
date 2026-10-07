@@ -41,9 +41,20 @@ export default async function BookingDetailPage({ params }: BookingDetailPagePro
           </p>
         </div>
 
-        <ButtonLink href="/booking" icon="arrow_back" variant="outline">
-          Kembali ke Daftar
-        </ButtonLink>
+        <div className="flex flex-wrap items-center gap-2">
+          <ButtonLink
+            href={`/api/v1/admin/handovers/booking/${data.booking.id}/pdf`}
+            icon="description"
+            rel="noopener noreferrer"
+            target="_blank"
+            variant="outline"
+          >
+            Cetak Berita Acara
+          </ButtonLink>
+          <ButtonLink href="/booking" icon="arrow_back" variant="outline">
+            Kembali ke Daftar
+          </ButtonLink>
+        </div>
       </section>
 
       <BookingDetailView initialData={data} />

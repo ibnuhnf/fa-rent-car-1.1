@@ -7,7 +7,6 @@ import {
 } from '@fa/shared';
 import {
   chargeableDays,
-  formatCode,
   randomCode,
   ratePackagesFor,
 } from './bookings.service';

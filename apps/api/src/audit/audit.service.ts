@@ -14,16 +14,35 @@ export type VehicleAuditAction =
   | 'VEHICLE_PHOTOS_UPLOADED'
   | 'VEHICLE_PHOTO_DELETED'
   | 'VEHICLE_RATE_UPDATED'
-  | 'PRICING_RULE_CREATED';
+  | 'PRICING_RULE_CREATED'
+  | 'MAINTENANCE_CREATED'
+  | 'MAINTENANCE_UPDATED'
+  | 'MAINTENANCE_DELETED';
 
 export type StorageAuditAction = 'STORAGE_UPLOAD_URL_ISSUED' | 'STORAGE_DOWNLOAD_URL_ISSUED';
 
 export type BookingAuditAction =
   | 'BOOKING_CREATED'
   | 'BOOKING_HOLD_EXTENDED'
-  | 'BOOKING_EXPIRED';
+  | 'BOOKING_EXPIRED'
+  | 'BOOKING_CANCELLED'
+  | 'BOOKING_ACTIVATED'
+  | 'BOOKING_REVISED'
+  | 'BOOKING_COMPLETED'
+  | 'DOCUMENT_VERIFIED'
+  | 'PAYMENT_RECORDED';
 
-export type AuditAction = AuthAuditAction | VehicleAuditAction | BookingAuditAction;
+export type HandoverAuditAction = 'HANDOVER_CREATED';
+
+export type AuditAction = AuthAuditAction | VehicleAuditAction | BookingAuditAction | HandoverAuditAction;
+
+export interface HandoverAuditEvent {
+  actorId: string;
+  action: HandoverAuditAction;
+  objectId: string;
+  before?: Prisma.InputJsonObject;
+  after?: Prisma.InputJsonObject;
+}
 
 export interface BookingAuditEvent {
   actorId: string | null;
@@ -71,7 +90,7 @@ export class AuditService {
   private append(
     transaction: Prisma.TransactionClient,
     objectType: string,
-    event: AuthAuditEvent | VehicleAuditEvent | StorageAuditEvent | BookingAuditEvent,
+    event: AuthAuditEvent | VehicleAuditEvent | StorageAuditEvent | BookingAuditEvent | HandoverAuditEvent,
   ): Promise<AuditLog> {
     return transaction.auditLog.create({
       data: { ...event, objectType },
@@ -98,5 +117,12 @@ export class AuditService {
     event: BookingAuditEvent,
   ): Promise<AuditLog> {
     return this.append(transaction, BOOKING_OBJECT_TYPE, event);
+  }
+
+  recordHandover(
+    transaction: Prisma.TransactionClient,
+    event: HandoverAuditEvent,
+  ): Promise<AuditLog> {
+    return this.append(transaction, 'HANDOVER', event);
   }
 }

@@ -4,3 +4,4 @@ export * from './formatters';
 export * from './pricing';
 export * from './schemas';
 export * from './schemas/rental';
+export * from './schemas/settings';

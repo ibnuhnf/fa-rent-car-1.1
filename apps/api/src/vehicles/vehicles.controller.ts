@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
+import type { Response } from 'express';
 import { ApiCookieAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import type { AvailabilityResponse, VehiclePhotoUploadResponse } from '@fa/shared';
 import { AdminAuthGuard, CurrentAdmin } from '../auth/admin-auth.guard';
@@ -31,12 +32,23 @@ export class VehiclesController {
   async checkAvailability(@Query() query: AvailabilityQueryDto): Promise<AvailabilityResponse> {
     const from = new Date(query.from);
     const to = new Date(query.to);
+    // If caller explicitly passes bufferHours, use it; otherwise fall back to
+    // the business setting (defaultBufferHours returns hours, not minutes).
+    const effectiveBuffer = query.bufferHours ?? await this.availability.defaultBufferHours();
     const availableVehicleIds = await this.availability.availableVehicleIds({
       from,
       to,
-      bufferHours: query.bufferHours ?? 0,
+      bufferHours: effectiveBuffer,
     });
-    return { from: query.from, to: query.to, bufferHours: query.bufferHours ?? 0, availableVehicleIds };
+    return { from: query.from, to: query.to, bufferHours: effectiveBuffer, availableVehicleIds };
+  }
+
+  @Get('export')
+  async exportCsv(@Res() res: Response): Promise<void> {
+    const csv = await this.vehicles.exportCsv();
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="vehicles.csv"');
+    res.send(csv);
   }
 
   @Get()

@@ -4,9 +4,11 @@ import {
   bookingDetailResponseSchema,
   bookingListQuerySchema,
   bookingListResponseSchema,
+  calendarResponseSchema,
   createApiClient,
   type BookingDetailResponse,
   type BookingListResponse,
+  type CalendarResponse,
 } from '@fa/shared';
 import { cookies } from 'next/headers';
 
@@ -48,6 +50,19 @@ export async function listBookings(
 export async function getBookingDetail(id: string): Promise<BookingDetailResponse> {
   const client = await createServerAdminClient();
   return client.get(`/admin/bookings/${id}`, bookingDetailResponseSchema);
+}
+
+export interface CalendarParams {
+  from: string;
+  to: string;
+  vehicleId?: string;
+}
+
+export async function getBookingCalendar(params: CalendarParams): Promise<CalendarResponse> {
+  const client = await createServerAdminClient();
+  const q = new URLSearchParams({ from: params.from, to: params.to });
+  if (params.vehicleId) q.set('vehicleId', params.vehicleId);
+  return client.get(`/admin/bookings/calendar?${q}`, calendarResponseSchema);
 }
 
 export { isAuthFailure } from './server-fleet';

@@ -94,6 +94,25 @@ enum PricingRuleType {
   @@map("pricing_rule_type")
 }
 
+enum HandoverType {
+  CHECKOUT
+  CHECKIN
+
+  @@map("handover_type")
+}
+
+enum ExpenseCategory {
+  FUEL
+  MAINTENANCE
+  CLEANING
+  SALARY
+  OFFICE
+  PARKING_TOLL
+  OTHER
+
+  @@map("expense_category")
+}
+
 model AdminUser {
   id                String              @id @default(uuid()) @db.Uuid
   name              String
@@ -108,6 +127,8 @@ model AdminUser {
   auditLogs         AuditLog[]          @relation("AuditLogActor")
   verifiedDocuments BookingDocument[]   @relation("DocumentVerifier")
   confirmedPayments Payment[]           @relation("PaymentConfirmer")
+  handovers         Handover[]
+  expenses          Expense[]
 
   @@index([isActive], map: "admin_users_is_active_idx")
   @@map("admin_users")
@@ -172,6 +193,7 @@ model Vehicle {
   rate         VehicleRate?
   bookingItems BookingItem[]
   pricingRules PricingRule[]
+  maintenances Maintenance[]
 
   @@index([status], map: "vehicles_status_idx")
   @@index([category], map: "vehicles_category_idx")
@@ -249,6 +271,7 @@ model Booking {
   documents     BookingDocument[]
   accessTokens  BookingAccessToken[]
   invoices      Invoice[]
+  driverRatings DriverRating[]
 
   @@index([customerId], map: "bookings_customer_id_idx")
   @@index([status], map: "bookings_status_idx")
@@ -275,6 +298,8 @@ model BookingItem {
   snapshot        Json
   createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt       DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  driver          Driver?  @relation(fields: [driverId], references: [id], onDelete: SetNull)
+  handovers       Handover[]
   booking         Booking  @relation(fields: [bookingId], references: [id], onDelete: Restrict)
   vehicle         Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Restrict)
 
@@ -400,4 +425,92 @@ model PricingRule {
   @@index([startDate, endDate], map: "pricing_rules_period_idx")
   @@index([isActive], map: "pricing_rules_is_active_idx")
   @@map("pricing_rules")
+}
+
+model Driver {
+  id           String         @id @default(uuid()) @db.Uuid
+  name         String
+  phone        String         @unique @db.VarChar(32)
+  simNumber    String         @unique @map("sim_number") @db.VarChar(64)
+  dailyRate    Int            @default(150000) @map("daily_rate")
+  isActive     Boolean        @default(true) @map("is_active")
+  notes        String?        @db.Text
+  createdAt    DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime       @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  bookingItems BookingItem[]
+  ratings      DriverRating[]
+
+  @@index([isActive], map: "drivers_is_active_idx")
+  @@map("drivers")
+}
+
+model DriverRating {
+  id        String   @id @default(uuid()) @db.Uuid
+  driverId  String   @map("driver_id") @db.Uuid
+  bookingId String   @map("booking_id") @db.Uuid
+  score     Int
+  feedback  String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  driver    Driver   @relation(fields: [driverId], references: [id], onDelete: Restrict)
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+
+  @@unique([driverId, bookingId], map: "driver_ratings_driver_id_booking_id_key")
+  @@index([driverId], map: "driver_ratings_driver_id_idx")
+  @@index([bookingId], map: "driver_ratings_booking_id_idx")
+  @@map("driver_ratings")
+}
+
+model Handover {
+  id            String       @id @default(uuid()) @db.Uuid
+  bookingItemId String       @map("booking_item_id") @db.Uuid
+  type          HandoverType
+  odometer      Int
+  fuelLevel     Int          @map("fuel_level")
+  notes         String?      @db.Text
+  damageReport  Json?        @map("damage_report")
+  photoKeys     String[]     @default([]) @map("photo_keys")
+  extraFee      Int          @default(0) @map("extra_fee")
+  signedByName  String       @map("signed_by_name")
+  signedAt      DateTime     @default(now()) @map("signed_at") @db.Timestamptz(6)
+  recordedBy    String       @map("recorded_by") @db.Uuid
+  createdAt     DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  bookingItem   BookingItem  @relation(fields: [bookingItemId], references: [id], onDelete: Restrict)
+  recorder      AdminUser    @relation(fields: [recordedBy], references: [id], onDelete: Restrict)
+
+  @@index([bookingItemId], map: "handovers_booking_item_id_idx")
+  @@index([type], map: "handovers_type_idx")
+  @@map("handovers")
+}
+
+model Expense {
+  id             String          @id @default(uuid()) @db.Uuid
+  category       ExpenseCategory
+  amount         Int
+  expenseDate    DateTime        @map("expense_date") @db.Timestamptz(6)
+  description    String          @db.Text
+  proofObjectKey String?         @map("proof_object_key") @db.VarChar(512)
+  recordedBy     String          @map("recorded_by") @db.Uuid
+  createdAt      DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  recorder       AdminUser       @relation(fields: [recordedBy], references: [id], onDelete: Restrict)
+
+  @@index([category], map: "expenses_category_idx")
+  @@index([expenseDate], map: "expenses_expense_date_idx")
+  @@map("expenses")
+}
+
+model Maintenance {
+  id              String    @id @default(uuid()) @db.Uuid
+  vehicleId       String    @map("vehicle_id") @db.Uuid
+  serviceDate     DateTime  @map("service_date") @db.Timestamptz(6)
+  odometer        Int
+  cost            Int
+  description     String    @db.Text
+  nextServiceDate DateTime? @map("next_service_date") @db.Timestamptz(6)
+  nextOdometer    Int?      @map("next_odometer")
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  vehicle         Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Restrict)
+
+  @@index([vehicleId], map: "maintenances_vehicle_id_idx")
+  @@index([serviceDate], map: "maintenances_service_date_idx")
+  @@map("maintenances")
 }

@@ -9,8 +9,14 @@ import {
   type BookingStatus,
   type InvoiceStatus,
 } from '@fa/shared';
-import { Badge, Button, Card, Icon, type BadgeTone } from '@fa/ui';
-import { describeBookingError, extendHold } from '../../../../lib/browser-booking';
+import { Badge, Button, Card, Icon, Input, type BadgeTone } from '@fa/ui';
+import {
+  cancelBooking,
+  createPayment,
+  describeBookingError,
+  extendHold,
+  verifyDocument,
+} from '../../../../lib/browser-booking';
 
 interface BookingDetailViewProps {
   initialData: BookingDetailResponse;
@@ -36,39 +42,155 @@ export function BookingDetailView({ initialData }: BookingDetailViewProps) {
   const router = useRouter();
   const [data, setData] = useState(initialData);
   const [extending, setExtending] = useState(false);
-  const [extendError, setExtendError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [actionNotice, setActionNotice] = useState<string | null>(null);
+
+  // Form pembayaran
+  const [payAmount, setPayAmount] = useState('');
+  const [payBank, setPayBank] = useState('BCA');
+  const [payNotes, setPayNotes] = useState('');
+  const [paying, setPaying] = useState(false);
+
+  // Form pembatalan
+  const [cancelReason, setCancelReason] = useState('');
+  const [cancelling, setCancelling] = useState(false);
+  const [showCancel, setShowCancel] = useState(false);
+
+  // Dokumen verifikasi
+  const [verifyingDocId, setVerifyingDocId] = useState<string | null>(null);
 
   const { booking, customer, invoices, timeline } = data;
   const latestInvoice = invoices[invoices.length - 1];
 
   const handleExtendHold = async (minutes: number) => {
     setExtending(true);
-    setExtendError(null);
+    setActionError(null);
     try {
       const result = await extendHold(booking.id, minutes);
       setData((prev) => ({
         ...prev,
         booking: { ...prev.booking, holdExpiresAt: result.holdExpiresAt },
       }));
+      setActionNotice(`Hold berhasil diperpanjang sampai ${formatDateTimeWib(result.holdExpiresAt)}`);
       router.refresh();
     } catch (err) {
-      setExtendError(describeBookingError(err));
+      setActionError(describeBookingError(err));
     } finally {
       setExtending(false);
     }
   };
 
+  const handleVerifyDoc = async (docId: string, decision: 'APPROVED' | 'REJECTED') => {
+    let reason: string | undefined;
+    if (decision === 'REJECTED') {
+      const inputReason = window.prompt('Masukkan alasan penolakan dokumen:');
+      if (!inputReason || inputReason.trim() === '') return;
+      reason = inputReason.trim();
+    }
+
+    setVerifyingDocId(docId);
+    setActionError(null);
+    try {
+      const res = await verifyDocument(booking.id, docId, { decision, reason });
+      setData((prev) => ({
+        ...prev,
+        booking: {
+          ...prev.booking,
+          status: res.bookingStatus as BookingStatus,
+          documents: prev.booking.documents.map((d) =>
+            d.id === docId
+              ? {
+                  ...d,
+                  status: res.document.status,
+                  rejectionReason: res.document.rejectionReason,
+                  verifiedAt: res.document.verifiedAt,
+                }
+              : d,
+          ),
+        },
+      }));
+      setActionNotice(decision === 'APPROVED' ? 'Dokumen disetujui.' : 'Dokumen ditolak.');
+      router.refresh();
+    } catch (err) {
+      setActionError(describeBookingError(err));
+    } finally {
+      setVerifyingDocId(null);
+    }
+  };
+
+  const handleAddPayment = async () => {
+    const amount = Number(payAmount);
+    if (!amount || amount <= 0) {
+      setActionError('Masukkan nominal pembayaran yang valid.');
+      return;
+    }
+
+    setPaying(true);
+    setActionError(null);
+    try {
+      const res = await createPayment(booking.id, {
+        amount,
+        paidAt: new Date().toISOString(),
+        bank: payBank,
+        notes: payNotes || undefined,
+      });
+
+      setData((prev) => ({
+        ...prev,
+        booking: { ...prev.booking, status: res.bookingStatus as BookingStatus },
+      }));
+      setPayAmount('');
+      setPayNotes('');
+      setActionNotice(`Pembayaran ${formatRupiah(amount)} berhasil dicatat.`);
+      router.refresh();
+    } catch (err) {
+      setActionError(describeBookingError(err));
+    } finally {
+      setPaying(false);
+    }
+  };
+
+  const handleCancelBooking = async () => {
+    if (!cancelReason.trim()) {
+      setActionError('Alasan pembatalan wajib diisi.');
+      return;
+    }
+
+    setCancelling(true);
+    setActionError(null);
+    try {
+      await cancelBooking(booking.id, { reason: cancelReason.trim() });
+      setData((prev) => ({
+        ...prev,
+        booking: { ...prev.booking, status: 'CANCELLED' },
+      }));
+      setShowCancel(false);
+      setActionNotice('Booking berhasil dibatalkan.');
+      router.refresh();
+    } catch (err) {
+      setActionError(describeBookingError(err));
+    } finally {
+      setCancelling(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
-      {extendError ? (
+      {actionError ? (
         <div className="rounded-xl border border-error bg-error-container p-4 text-body-md text-on-error-container">
-          <p className="font-semibold">Perpanjangan hold gagal</p>
-          <p className="mt-1">{extendError}</p>
+          <p className="font-semibold">Terjadi kendala</p>
+          <p className="mt-1">{actionError}</p>
+        </div>
+      ) : null}
+
+      {actionNotice ? (
+        <div className="rounded-xl border border-secondary bg-surface-low p-4 text-body-md text-secondary">
+          <p className="font-semibold">{actionNotice}</p>
         </div>
       ) : null}
 
       <div className="grid gap-6 lg:grid-cols-3">
-        {/* Kolom Kiri: Status & Rincian Armada */}
+        {/* Kolom Kiri: Status, Armada, Dokumen, Pembayaran */}
         <div className="space-y-6 lg:col-span-2">
           <Card padding="md">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-surface-highest pb-4">
@@ -181,7 +303,67 @@ export function BookingDetailView({ initialData }: BookingDetailViewProps) {
             ) : null}
           </Card>
 
-          {/* Rincian Invoice Snapshot */}
+          {/* Verifikasi Dokumen Identitas */}
+          <Card padding="md">
+            <h3 className="font-display text-title text-on-surface">Dokumen Identitas Penyewa</h3>
+            {booking.documents.length === 0 ? (
+              <p className="mt-2 text-body-md text-on-surface-variant">
+                Belum ada dokumen yang diunggah.
+              </p>
+            ) : (
+              <div className="mt-4 space-y-3">
+                {booking.documents.map((doc) => (
+                  <div
+                    key={doc.id}
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-surface-highest bg-surface-low p-3"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold">{doc.type}</span>
+                        <Badge
+                          tone={
+                            doc.status === 'APPROVED'
+                              ? 'success'
+                              : doc.status === 'REJECTED'
+                                ? 'danger'
+                                : 'warning'
+                          }
+                        >
+                          {doc.status}
+                        </Badge>
+                      </div>
+                      {doc.rejectionReason ? (
+                        <p className="mt-1 text-caption text-error">Alasan: {doc.rejectionReason}</p>
+                      ) : null}
+                    </div>
+
+                    {booking.status === 'PENDING_VERIFICATION' || booking.status === 'ACTIVE' ? (
+                      <div className="flex gap-2">
+                        <Button
+                          loading={verifyingDocId === doc.id}
+                          onClick={() => handleVerifyDoc(doc.id, 'APPROVED')}
+                          size="sm"
+                          variant="secondary"
+                        >
+                          Setujui
+                        </Button>
+                        <Button
+                          loading={verifyingDocId === doc.id}
+                          onClick={() => handleVerifyDoc(doc.id, 'REJECTED')}
+                          size="sm"
+                          variant="outline"
+                        >
+                          Tolak
+                        </Button>
+                      </div>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+
+          {/* Rincian Invoice & Pencatatan Pembayaran */}
           {latestInvoice ? (
             <Card padding="md">
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-surface-highest pb-4">
@@ -215,17 +397,130 @@ export function BookingDetailView({ initialData }: BookingDetailViewProps) {
                 ))}
               </div>
 
-              <div className="mt-4 border-t border-surface-highest pt-4">
-                <div className="flex items-center justify-between font-display text-title text-on-surface">
+              <div className="mt-4 flex items-center justify-between border-t border-surface-highest pt-4">
+                <div className="font-display text-title text-on-surface">
                   <span>Total Tagihan</span>
-                  <span className="tabular-nums text-secondary">
+                  <span className="ml-3 tabular-nums text-secondary">
                     {formatRupiah(latestInvoice.totalAmount)}
                   </span>
                 </div>
-                <p className="mt-1 text-caption text-on-surface-variant">
-                  * Pembayaran 100% di muka via transfer bank. Tanpa deposit.
-                </p>
+                <a
+                  className="inline-flex items-center gap-1 rounded-lg bg-secondary px-3 py-1.5 text-label-md font-semibold text-surface-lowest hover:bg-secondary/90"
+                  href={`/booking/${booking.id}/invoice/${latestInvoice.version}`}
+                  target="_blank"
+                >
+                  <Icon name="receipt" size="sm" />
+                  Cetak / PDF
+                </a>
               </div>
+
+              {/* Riwayat Invoice Revisi jika ada lebih dari 1 versi */}
+              {invoices.length > 1 ? (
+                <div className="mt-4 border-t border-surface-highest pt-3">
+                  <span className="text-caption font-semibold uppercase tracking-wider text-on-surface-variant">
+                    Riwayat Revisi Invoice ({invoices.length} versi)
+                  </span>
+                  <div className="mt-2 space-y-1">
+                    {invoices.map((inv) => (
+                      <div
+                        className="flex items-center justify-between text-body-sm text-on-surface-variant"
+                        key={inv.id}
+                      >
+                        <span>
+                          Versi {inv.version} ({inv.invoiceNumber}) · {inv.status}
+                        </span>
+                        <div className="flex items-center gap-3">
+                          <span className="tabular-nums font-medium">{formatRupiah(inv.totalAmount)}</span>
+                          <a
+                            className="text-caption text-secondary hover:underline"
+                            href={`/booking/${booking.id}/invoice/${inv.version}`}
+                            target="_blank"
+                          >
+                            Lihat
+                          </a>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              {/* Form Input Pembayaran Manual */}
+              {latestInvoice.status !== 'PAID' &&
+              (booking.status === 'PENDING_VERIFICATION' || booking.status === 'ACTIVE') ? (
+                <div className="mt-6 border-t border-surface-highest pt-4">
+                  <h4 className="text-body-lg font-semibold text-on-surface">
+                    Catat Pembayaran Manual
+                  </h4>
+                  <p className="mt-1 text-caption text-on-surface-variant">
+                    Konfirmasi mutasi rekening bank transfer dari customer.
+                  </p>
+                  <div className="mt-3 grid gap-3 sm:grid-cols-3">
+                    <Input
+                      label="Nominal (Rp)"
+                      onChange={(e) => setPayAmount(e.target.value)}
+                      type="number"
+                      value={payAmount}
+                    />
+                    <Input
+                      label="Bank Tujuan"
+                      onChange={(e) => setPayBank(e.target.value)}
+                      value={payBank}
+                    />
+                    <Input
+                      label="Catatan / No. Ref"
+                      onChange={(e) => setPayNotes(e.target.value)}
+                      value={payNotes}
+                    />
+                  </div>
+                  <Button
+                    className="mt-3"
+                    loading={paying}
+                    onClick={handleAddPayment}
+                    variant="secondary"
+                  >
+                    Konfirmasi Pembayaran
+                  </Button>
+                </div>
+              ) : null}
+            </Card>
+          ) : null}
+
+          {/* Opsi Batalkan Booking */}
+          {booking.status === 'PENDING_VERIFICATION' || booking.status === 'ACTIVE' ? (
+            <Card padding="md">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-body-lg font-semibold text-on-surface">Batalkan Pemesanan</h4>
+                  <p className="text-caption text-on-surface-variant">
+                    Pelepasan jadwal mobil yang telah dibooking.
+                  </p>
+                </div>
+                <Button
+                  onClick={() => setShowCancel(!showCancel)}
+                  size="sm"
+                  variant="outline"
+                >
+                  {showCancel ? 'Tutup' : 'Batalkan Booking'}
+                </Button>
+              </div>
+
+              {showCancel ? (
+                <div className="mt-4 space-y-3 border-t border-surface-highest pt-3">
+                  <Input
+                    label="Alasan Pembatalan"
+                    onChange={(e) => setCancelReason(e.target.value)}
+                    value={cancelReason}
+                  />
+                  <Button
+                    loading={cancelling}
+                    onClick={handleCancelBooking}
+                    variant="outline"
+                  >
+                    Konfirmasi Pembatalan
+                  </Button>
+                </div>
+              ) : null}
             </Card>
           ) : null}
         </div>

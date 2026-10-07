@@ -4,6 +4,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AuditService } from './audit/audit.service';
+import { AuditLogsController } from './audit/audit-logs.controller';
 import { ACCESS_TTL_SECONDS } from './auth/auth-cookies';
 import { AdminAuthGuard } from './auth/admin-auth.guard';
 import { AuthController } from './auth/auth.controller';
@@ -15,12 +16,33 @@ import { BookingsController } from './bookings/bookings.controller';
 import { BookingsService } from './bookings/bookings.service';
 import { validateEnvironment, type Environment } from './config/environment';
 import { PrismaService } from './database/prisma.service';
+import { DashboardController } from './dashboard/dashboard.controller';
+import { DashboardService } from './dashboard/dashboard.service';
+import { DriversController } from './drivers/drivers.controller';
+import { DriversService } from './drivers/drivers.service';
+import { FinancesController } from './finances/finances.controller';
+import { FinancesService } from './finances/finances.service';
+import { HandoversController } from './handovers/handovers.controller';
+import { HandoversService } from './handovers/handovers.service';
 import { FoundationController } from './foundation/foundation.controller';
 import { FoundationService } from './foundation/foundation.service';
 import { HealthController } from './health/health.controller';
 import { JobsService } from './jobs/jobs.service';
+import { PortalController } from './portal/portal.controller';
+import { PortalTokenGuard } from './portal/portal-token.guard';
+import { PortalService } from './portal/portal.service';
+import { PublicController } from './public/public.controller';
+import { PublicService } from './public/public.service';
+import { SettingsController } from './settings/settings.controller';
+import { SettingsService } from './settings/settings.service';
+import { StaffController } from './staff/staff.controller';
+import { StaffService } from './staff/staff.service';
 import { StorageController } from './storage/storage.controller';
 import { StorageService } from './storage/storage.service';
+import { VerificationController } from './verification/verification.controller';
+import { VerificationService } from './verification/verification.service';
+import { MaintenancesController } from './maintenances/maintenances.controller';
+import { MaintenancesService } from './maintenances/maintenances.service';
 import { AvailabilityService } from './vehicles/availability.service';
 import { VehiclesController } from './vehicles/vehicles.controller';
 import { VehiclesService } from './vehicles/vehicles.service';
@@ -54,25 +76,47 @@ import { VehiclesService } from './vehicles/vehicles.service';
   ],
   controllers: [
     AuthController,
+    AuditLogsController,
     BookingsController,
+    DashboardController,
+    DriversController,
+    FinancesController,
     FoundationController,
+    HandoversController,
     HealthController,
+    PortalController,
+    PublicController,
+    SettingsController,
+    StaffController,
     StorageController,
+    MaintenancesController,
     VehiclesController,
+    VerificationController,
   ],
   providers: [
     PrismaService,
+    MaintenancesService,
     AuditService,
     AuthService,
     AdminAuthGuard,
     CsrfGuard,
     RolesGuard,
+    DashboardService,
+    DriversService,
+    FinancesService,
     FoundationService,
+    HandoversService,
     JobsService,
+    PortalTokenGuard,
+    PortalService,
+    PublicService,
+    SettingsService,
+    StaffService,
     StorageService,
     VehiclesService,
     AvailabilityService,
     BookingsService,
+    VerificationService,
     { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })

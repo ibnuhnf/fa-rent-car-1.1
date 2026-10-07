@@ -6,9 +6,11 @@
     "dev": "next dev --port 3001",
     "build": "next build",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
+    "@fa/shared": "workspace:*",
     "@fa/ui": "workspace:*",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",

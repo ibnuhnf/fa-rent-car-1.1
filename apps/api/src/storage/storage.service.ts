@@ -54,10 +54,17 @@ export class StorageService implements OnModuleDestroy {
     purpose: StoragePurpose;
     contentType: AllowedMimeType;
     sizeBytes: number;
+    ownerId?: string;
   }): Promise<{ uploadUrl: string; key: string; expiresInSeconds: number }> {
-    const valid = requestUploadUrlSchema.parse(input);
+    const valid = requestUploadUrlSchema.parse({
+      purpose: input.purpose,
+      contentType: input.contentType,
+      sizeBytes: input.sizeBytes,
+    });
     const ext = MIME_TO_EXTENSION[valid.contentType];
-    const key = `${valid.purpose}/${randomUUID()}.${ext}`;
+    const key = input.ownerId
+      ? `staging/portal/${input.ownerId}/${randomUUID()}.${ext}`
+      : `${valid.purpose}/${randomUUID()}.${ext}`;
     const uploadUrl = await getSignedUrl(
       this.client,
       new PutObjectCommand({
