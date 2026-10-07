@@ -4,13 +4,14 @@ RUN npm install -g pnpm@10.26.0
 
 FROM base AS builder
 # Copy package definitions and lockfile for workspace resolution
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
 COPY packages ./packages
 COPY apps/api ./apps/api
 
 RUN pnpm install --frozen-lockfile
 RUN pnpm --filter @fa/shared build
 RUN pnpm --filter @fa/db generate
+RUN pnpm --filter @fa/db build
 RUN pnpm --filter @fa/api build
 
 FROM base AS runner
