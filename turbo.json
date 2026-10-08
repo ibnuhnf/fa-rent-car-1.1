@@ -9,7 +9,7 @@
     },
     "dev": { "cache": false, "persistent": true },
     "lint": { "dependsOn": ["^build"] },
-    "typecheck": { "dependsOn": ["^build"] },
+    "typecheck": { "dependsOn": ["^build"], "outputs": [] },
     "test": { "dependsOn": ["^build"], "outputs": [] },
     "@fa/ui#build": { "dependsOn": ["^build"], "outputs": [] }
   }

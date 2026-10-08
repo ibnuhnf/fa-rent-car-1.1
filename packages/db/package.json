@@ -23,7 +23,7 @@
     "migrate:deploy": "prisma migrate deploy",
     "seed": "tsx prisma/seed.ts",
     "lint": "eslint \"{src,prisma,test}/**/*.ts\"",
-    "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
+    "typecheck": "prisma generate && tsc --noEmit -p tsconfig.typecheck.json",
     "test": "vitest run"
   },
   "prisma": {
