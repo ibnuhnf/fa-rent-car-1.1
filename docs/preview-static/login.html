@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Admin | FE Rent Car Operations</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{background:'#f8f9fb',surface:'#f8f9fb','surface-container-lowest':'#fff','surface-container-low':'#f2f4f6','on-surface':'#191c1e','on-surface-variant':'#4c4546',primary:'#000','on-primary':'#fff',secondary:'#184fd6','on-secondary':'#fff'},fontFamily:{sans:['Inter','sans-serif']},maxWidth:{'container-max':'1280px'}}}}</script>
+<style>body{font-family:'Inter',sans-serif;background:#f8f9fb;color:#191c1e}</style>
+</head>
+<body class="antialiased">
+
+<div class="min-h-screen grid grid-cols-1 lg:grid-cols-2">
+
+<div class="hidden lg:flex flex-col justify-between bg-secondary text-white p-12 relative overflow-hidden">
+<div class="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-white/10"></div>
+<div class="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-white/10"></div>
+<div class="relative">
+<a href="index.html" class="inline-flex items-center gap-2">
+<span class="w-10 h-10 rounded-lg bg-white text-secondary flex items-center justify-center font-bold text-lg">FE</span>
+<span class="font-bold text-lg">FE Rent Car</span>
+</a>
+</div>
+<div class="relative max-w-md">
+<span class="material-symbols-outlined text-5xl mb-6 text-white/80">local_shipping</span>
+<h2 class="text-3xl font-bold tracking-tight mb-4">FE Rent Car Operations</h2>
+<p class="text-white/80 leading-relaxed">Kendalikan armada, sopir, booking, dan verifikasi dokumen pelanggan dari satu dashboard operasional terpusat.</p>
+<ul class="mt-8 space-y-3 text-sm text-white/90">
+<li class="flex items-center gap-3"><span class="material-symbols-outlined text-xl">check_circle</span>Monitoring 45 armada real-time</li>
+<li class="flex items-center gap-3"><span class="material-symbols-outlined text-xl">check_circle</span>Verifikasi KTP, SIM &amp; STNK pelanggan</li>
+<li class="flex items-center gap-3"><span class="material-symbols-outlined text-xl">check_circle</span>Laporan pendapatan bulanan otomatis</li>
+</ul>
+</div>
+<p class="relative text-xs text-white/60">&copy; 2024 PT FE Rent Car Indonesia. Portal internal karyawan.</p>
+</div>
+
+<div class="flex flex-col items-center justify-center px-5 py-16">
+<div class="w-full max-w-md">
+<div class="lg:hidden flex items-center gap-2 mb-8 justify-center">
+<a href="index.html" class="w-10 h-10 rounded-lg bg-black text-white flex items-center justify-center font-bold text-lg">FE</a>
+<div class="leading-tight"><span class="font-bold block">FE Rent Car</span><span class="text-xs text-gray-500 uppercase tracking-wider">Operations</span></div>
+</div>
+
+<div class="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
+<h1 class="text-2xl font-bold tracking-tight">Masuk ke Admin Desk</h1>
+<p class="text-sm text-gray-500 mt-1.5 mb-6">Gunakan akun karyawan yang terdaftar.</p>
+
+<form class="space-y-4" onsubmit="event.preventDefault();window.location.href='dashboard.html';">
+<div>
+<label for="email" class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">Email Karyawan</label>
+<div class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 focus-within:border-blue-600 focus-within:bg-white transition">
+<span class="material-symbols-outlined text-gray-400 text-base">mail</span>
+<input id="email" type="email" placeholder="admin@ferentcar.co.id" class="w-full bg-transparent text-sm focus:outline-none" required>
+</div>
+</div>
+<div>
+<label for="password" class="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-1.5">Password</label>
+<div class="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 focus-within:border-blue-600 focus-within:bg-white transition">
+<span class="material-symbols-outlined text-gray-400 text-base">lock</span>
+<input id="password" type="password" placeholder="Masukkan password" class="w-full bg-transparent text-sm focus:outline-none" required>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<label class="flex items-center gap-2 text-xs text-gray-500 cursor-pointer"><input type="checkbox" class="w-4 h-4 accent-blue-600">Ingat saya</label>
+<a href="#" class="text-xs text-blue-600 font-semibold hover:underline">Lupa password?</a>
+</div>
+<button type="submit" class="w-full py-3 rounded-lg bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 transition flex items-center justify-center gap-2 cursor-pointer shadow-sm">
+<span>Masuk</span><span class="material-symbols-outlined text-lg">arrow_forward</span>
+</button>
+</form>
+
+<p class="text-xs text-gray-400 text-center mt-6">Demo statis: tombol Masuk langsung menuju <a href="dashboard.html" class="text-blue-600 hover:underline">dashboard.html</a></p>
+</div>
+
+<p class="text-center text-sm text-gray-500 mt-8">
+<a href="index.html" class="inline-flex items-center gap-1.5 text-gray-600 hover:text-black font-medium transition"><span class="material-symbols-outlined text-lg">arrow_back</span>Kembali ke Beranda</a>
+</p>
+</div>
+</div>
+
+</div>
+
+</body>
+</html>

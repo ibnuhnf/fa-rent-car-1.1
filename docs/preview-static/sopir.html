@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manajemen Sopir | FE Rent Car</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{background:'#f8f9fb',surface:'#f8f9fb','surface-container-lowest':'#fff','surface-container-low':'#f2f4f6','on-surface':'#191c1e','on-surface-variant':'#4c4546',primary:'#000','on-primary':'#fff',secondary:'#184fd6','on-secondary':'#fff'},fontFamily:{sans:['Inter','sans-serif']},maxWidth:{'container-max':'1280px'}}}}</script>
+<style>
+body{font-family:'Inter',sans-serif;background:#f8f9fb;color:#191c1e}
+.modal-backdrop{opacity:0;transition:opacity .18s ease-out}
+.modal-backdrop.open{opacity:1}
+.modal-panel{opacity:0;transform:translateY(8px) scale(.98);transition:opacity .18s ease-out,transform .18s ease-out}
+.modal-backdrop.open .modal-panel{opacity:1;transform:translateY(0) scale(1)}
+.toast{opacity:0;transform:translateY(12px);transition:opacity .2s ease-out,transform .2s ease-out}
+.toast.show{opacity:1;transform:translateY(0)}
+.toggle-switch{width:38px;height:22px;border-radius:9999px;background:#e5e7eb;position:relative;cursor:pointer;transition:background .18s ease}
+.toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:9999px;background:white;transition:transform .18s ease;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.toggle-switch.on{background:#16a34a}
+.toggle-switch.on::after{transform:translateX(16px)}
+</style>
+</head>
+<body class="antialiased">
+<div class="flex min-h-screen">
+<aside class="hidden lg:flex flex-col w-64 bg-white border-r border-gray-200 sticky top-0 h-screen overflow-y-auto">
+<div class="p-5 flex items-center gap-2 border-b border-gray-100">
+<a href="index.html" class="w-9 h-9 rounded-lg bg-black text-white flex items-center justify-center font-bold text-sm">FE</a>
+<div class="leading-tight"><span class="font-bold text-sm block">FE Rent Car</span><span class="text-[10px] text-gray-500 uppercase tracking-wider">Operations</span></div>
+</div>
+<nav class="flex-1 p-3 space-y-1">
+<a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 text-sm transition"><span class="material-symbols-outlined text-xl">dashboard</span>Dashboard</a>
+<a href="armada.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 text-sm transition"><span class="material-symbols-outlined text-xl">directions_car</span>Manajemen Armada</a>
+<a href="sopir.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-blue-50 text-blue-700 font-semibold text-sm"><span class="material-symbols-outlined text-xl">badge</span>Manajemen Sopir</a>
+<a href="verifikasi.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 text-sm transition"><span class="material-symbols-outlined text-xl">verified_user</span>Verifikasi</a>
+<a href="booking.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 text-sm transition"><span class="material-symbols-outlined text-xl">calendar_month</span>Manajemen Booking</a>
+<a href="pelanggan.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 text-sm transition"><span class="material-symbols-outlined text-xl">group</span>Manajemen Pelanggan</a>
+</nav>
+<div class="p-3 border-t border-gray-100">
+<a href="login.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 text-sm font-medium transition"><span class="material-symbols-outlined text-xl">logout</span>Logout</a>
+</div>
+</aside>
+<div class="flex-1 flex flex-col min-w-0">
+<header class="sticky top-0 z-30 bg-white/90 backdrop-blur-xl border-b border-gray-200 px-4 md:px-6 h-16 flex items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<button class="lg:hidden p-2 rounded-lg hover:bg-gray-100"><span class="material-symbols-outlined">menu</span></button>
+<h1 class="text-lg font-bold tracking-tight">Manajemen Sopir</h1>
+</div>
+<div class="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm">AD</div>
+</header>
+<main class="flex-1 p-4 md:p-6 space-y-6 max-w-container-max mx-auto w-full">
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+<div class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm"><p class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Total Sopir</p><p id="statTotal" class="text-3xl font-bold">0</p></div>
+<div class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm"><p class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Aktif</p><p id="statAktif" class="text-3xl font-bold text-green-600">0</p></div>
+<div class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm"><p class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Off Duty</p><p id="statOff" class="text-3xl font-bold text-amber-600">0</p></div>
+</div>
+<div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+<div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+<div class="relative"><span class="material-symbols-outlined absolute left-3 top-2.5 text-gray-400 text-lg">search</span><input id="searchSopir" type="text" placeholder="Cari nama atau No. SIM..." class="pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-400 w-full sm:w-64"></div>
+<select id="statusFilterSopir" class="bg-gray-50 border border-gray-200 rounded-lg text-sm px-3 py-2 focus:outline-none"><option>Semua</option><option>Aktif</option><option>Off Duty</option><option>Cuti</option></select>
+</div>
+<button id="btnTambahSopir" class="px-4 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition flex items-center gap-1.5 whitespace-nowrap"><span class="material-symbols-outlined text-lg">add</span>Tambah Sopir</button>
+</div>
+<div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-sm">
+<thead class="bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
+<tr><th class="px-4 py-3 text-left font-semibold">ID</th><th class="px-4 py-3 text-left font-semibold">Nama</th><th class="px-4 py-3 text-left font-semibold">No. SIM</th><th class="px-4 py-3 text-left font-semibold">Status</th><th class="px-4 py-3 text-left font-semibold">Penugasan Terakhir</th><th class="px-4 py-3 text-left font-semibold">Rating</th><th class="px-4 py-3 text-left font-semibold">Aksi</th></tr>
+</thead>
+<tbody id="sopirBody" class="divide-y divide-gray-100"></tbody>
+</table>
+</div>
+</div>
+</main>
+<footer class="border-t border-gray-200 bg-white px-6 py-4 mt-auto">
+<div class="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-gray-500">
+<p>&copy; 2024 PT FE Rent Car Indonesia.</p>
+<a href="index.html" class="inline-flex items-center gap-1 hover:text-black transition"><span class="material-symbols-outlined text-sm">arrow_back</span>Beranda Customer</a>
+</div>
+</footer>
+</div>
+</div>
+
+<div id="modalHost"></div>
+<div id="toastHost" class="fixed bottom-6 right-6 z-[60] flex flex-col gap-2"></div>
+
+<script>
+let sopir = [
+  {id:'SPR-001',name:'Agus Setiawan',sim:'SIM A 1234567890',status:'Aktif',assignment:'Toyota Avanza - 14 Agu',rating:4.5,phone:'0812-1111-1111'},
+  {id:'SPR-002',name:'Bambang Wijaya',sim:'SIM A 2345678901',status:'Off Duty',assignment:'Toyota Innova Zenix - 12 Agu',rating:5.0,phone:'0812-2222-2222'},
+  {id:'SPR-003',name:'Dedi Kurniawan',sim:'SIM A 3456789012',status:'Aktif',assignment:'Mitsubishi Pajero Sport - 15 Agu',rating:4.0,phone:'0812-3333-3333'},
+  {id:'SPR-004',name:'Eko Prasetyo',sim:'SIM A 4567890123',status:'Cuti',assignment:'-',rating:3.0,phone:'0812-4444-4444'},
+  {id:'SPR-005',name:'Fajar Nugroho',sim:'SIM A 5678901234',status:'Aktif',assignment:'Toyota Fortuner VRZ - 16 Agu',rating:4.5,phone:'0812-5555-5555'},
+  {id:'SPR-006',name:'Gunawan Hidayat',sim:'SIM A 6789012345',status:'Off Duty',assignment:'Toyota Alphard - 10 Agu',rating:5.0,phone:'0812-6666-6666'},
+  {id:'SPR-007',name:'Hendra Gunawan',sim:'SIM A 7890123456',status:'Aktif',assignment:'Toyota Vios - 17 Agu',rating:4.0,phone:'0812-7777-7777'},
+  {id:'SPR-008',name:'Irwan Saputra',sim:'SIM A 8901234567',status:'Off Duty',assignment:'Daihatsu Xenia - 08 Agu',rating:3.0,phone:'0812-8888-8888'}
+];
+let nextSopirNum = 9;
+
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const initials = n => n.split(/\s+/).slice(0,2).map(x => x[0]||'').join('').toUpperCase();
+const stars = r => { const full=Math.floor(r), half=r%1>=0.5; let s=''; for(let i=0;i<5;i++){ s += i<full ? `<span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1">star</span>` : (i===full && half ? `<span class="material-symbols-outlined text-base" style="font-variation-settings:'FILL' 1">star_half</span>` : `<span class="material-symbols-outlined text-base">star_border</span>`); } return s; };
+
+function toast(msg, kind) {
+  const colors = {green:'bg-green-600',red:'bg-red-600',blue:'bg-blue-600'};
+  const el = document.createElement('div');
+  el.className = `toast ${colors[kind||'blue']} text-white text-sm font-medium px-4 py-2.5 rounded-lg shadow-lg flex items-center gap-2`;
+  el.innerHTML = `<span class="material-symbols-outlined text-base">${kind==='red'?'error':kind==='green'?'check_circle':'info'}</span>${esc(msg)}`;
+  document.getElementById('toastHost').appendChild(el);
+  requestAnimationFrame(() => el.classList.add('show'));
+  setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 220); }, 2800);
+}
+
+function openModal(html, onMount) {
+  closeModal(true);
+  const host = document.getElementById('modalHost');
+  host.innerHTML = `<div class="modal-backdrop fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+    <div class="modal-panel bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto relative">
+      <button data-close class="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-gray-100 text-gray-500"><span class="material-symbols-outlined">close</span></button>
+      <div>${html}</div>
+    </div>
+  </div>`;
+  const bd = host.firstElementChild;
+  requestAnimationFrame(() => bd.classList.add('open'));
+  bd.addEventListener('click', e => { if (e.target === bd || e.target.closest('[data-close]')) closeModal(); });
+  document.addEventListener('keydown', escClose);
+  if (onMount) onMount(host);
+}
+function escClose(e) { if (e.key === 'Escape') closeModal(); }
+function closeModal(silent) {
+  const host = document.getElementById('modalHost');
+  document.removeEventListener('keydown', escClose);
+  const bd = host.firstElementChild;
+  if (!bd) return;
+  bd.classList.remove('open');
+  if (silent) { host.innerHTML = ''; return; }
+  setTimeout(() => { host.innerHTML = ''; }, 180);
+}
+
+function statusBadge(s) {
+  const m = {Aktif:'bg-green-50 text-green-700','Off Duty':'bg-amber-50 text-amber-700',Cuti:'bg-blue-50 text-blue-700'};
+  return `<span class="px-2.5 py-1 rounded-full text-xs font-bold ${m[s]}">${s}</span>`;
+}
+
+function renderSopir() {
+  const q = document.getElementById('searchSopir').value.trim().toLowerCase();
+  const sf = document.getElementById('statusFilterSopir').value;
+  const rows = sopir.filter(s => (!q || s.name.toLowerCase().includes(q) || s.sim.toLowerCase().includes(q)) && (sf === 'Semua' || s.status === sf));
+  document.getElementById('sopirBody').innerHTML = rows.length ? rows.map(s => `<tr>
+    <td class="px-4 py-3 font-mono text-xs">${esc(s.id)}</td>
+    <td class="px-4 py-3"><div class="flex items-center gap-2.5"><div class="w-9 h-9 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">${initials(s.name)}</div><div><div class="font-medium">${esc(s.name)}</div><div class="text-[11px] text-gray-500">${esc(s.phone||'')}</div></div></div></td>
+    <td class="px-4 py-3 text-gray-600 font-mono text-xs">${esc(s.sim)}</td>
+    <td class="px-4 py-3">${statusBadge(s.status)}</td>
+    <td class="px-4 py-3 text-gray-600 text-xs">${esc(s.assignment)}</td>
+    <td class="px-4 py-3"><div class="flex items-center text-amber-500">${stars(s.rating)}<span class="ml-1 text-xs text-gray-500">${s.rating.toFixed(1)}</span></div></td>
+    <td class="px-4 py-3"><div class="flex items-center gap-2">
+      <button data-toggle="${s.id}" class="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-gray-50" title="Toggle Aktif/Off Duty"><div class="toggle-switch ${s.status==='Aktif'?'on':''}"></div><span class="text-[11px] font-medium ${s.status==='Aktif'?'text-green-700':'text-gray-500'}">${s.status==='Aktif'?'Aktif':'Off'}</span></button>
+      <button data-edit="${s.id}" title="Edit" class="p-1.5 rounded-lg hover:bg-blue-50 text-blue-600"><span class="material-symbols-outlined text-lg">edit</span></button>
+      <button data-del="${s.id}" title="Hapus" class="p-1.5 rounded-lg hover:bg-red-50 text-red-600"><span class="material-symbols-outlined text-lg">delete</span></button>
+    </div></td>
+  </tr>`).join('') : `<tr><td colspan="7" class="px-4 py-10 text-center text-gray-400 text-sm">Tidak ada sopir yang cocok.</td></tr>`;
+  document.getElementById('statTotal').textContent = sopir.length;
+  document.getElementById('statAktif').textContent = sopir.filter(s=>s.status==='Aktif').length;
+  document.getElementById('statOff').textContent = sopir.filter(s=>s.status==='Off Duty').length;
+}
+
+function formSopirModal(s, isEdit) {
+  const c = s || {id:'',name:'',sim:'',phone:'',status:'Aktif',assignment:'-',rating:4.5};
+  openModal(`<div class="p-6 pb-4 border-b border-gray-100"><h3 class="text-lg font-bold pr-8">${isEdit?'Edit Sopir':'Tambah Sopir Baru'}</h3><p class="text-xs text-gray-500 mt-0.5">${isEdit?esc(s.name):'Isi data sopir baru'}</p></div>
+  <form id="sopirForm" class="p-6 space-y-3.5">
+    <div><label class="block text-xs font-semibold text-gray-600 mb-1">Nama Lengkap <span class="text-red-500">*</span></label><input name="name" required value="${esc(c.name)}" placeholder="Joko Susilo" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-400"></div>
+    <div class="grid grid-cols-2 gap-3">
+      <div><label class="block text-xs font-semibold text-gray-600 mb-1">No. SIM <span class="text-red-500">*</span></label><input name="sim" required value="${esc(c.sim)}" placeholder="SIM A 0000000000" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-400"></div>
+      <div><label class="block text-xs font-semibold text-gray-600 mb-1">No. WhatsApp</label><input name="phone" value="${esc(c.phone||'')}" placeholder="0812-xxxx-xxxx" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-400"></div>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <div><label class="block text-xs font-semibold text-gray-600 mb-1">Status</label><select name="status" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none">
+        ${['Aktif','Off Duty','Cuti'].map(t=>`<option ${c.status===t?'selected':''}>${t}</option>`).join('')}</select></div>
+      <div><label class="block text-xs font-semibold text-gray-600 mb-1">Rating (1-5)</label><input name="rating" type="number" min="0" max="5" step="0.1" value="${c.rating}" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-400"></div>
+    </div>
+    <div><label class="block text-xs font-semibold text-gray-600 mb-1">Penugasan Terakhir</label><input name="assignment" value="${esc(c.assignment)}" placeholder="Toyota Avanza - 14 Agu" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-400"></div>
+    <div class="flex gap-2 pt-1">
+      <button type="button" data-close class="flex-1 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-700 text-sm font-semibold hover:bg-gray-200 transition">Batal</button>
+      <button type="submit" class="flex-1 px-4 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition">${isEdit?'Simpan Perubahan':'Tambah Sopir'}</button>
+    </div>
+  </form>`, host => {
+    host.querySelector('#sopirForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const f = new FormData(e.target);
+      const data = {name:f.get('name').trim(),sim:f.get('sim').trim(),phone:f.get('phone').trim(),status:f.get('status'),rating:+f.get('rating'),assignment:f.get('assignment').trim()};
+      if (isEdit) {
+        Object.assign(s, data);
+        toast('Data sopir diperbarui', 'green');
+      } else {
+        sopir.push({id:'SPR-'+String(nextSopirNum++).padStart(3,'0'), ...data});
+        toast('Sopir baru ditambahkan', 'green');
+      }
+      closeModal(); renderSopir();
+    });
+  });
+}
+
+document.getElementById('sopirBody').addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  const s = sopir.find(x => x.id === b.dataset.toggle || x.id === b.dataset.edit || x.id === b.dataset.del);
+  if (!s) return;
+  if (b.dataset.toggle) {
+    s.status = s.status === 'Aktif' ? 'Off Duty' : 'Aktif';
+    renderSopir(); toast(`${s.name}: ${s.status}`, s.status==='Aktif'?'green':'blue');
+    return;
+  }
+  if (b.dataset.edit) { formSopirModal(s, true); return; }
+  if (b.dataset.del) {
+    if (confirm(`Hapus sopir ${s.name}?`)) { sopir = sopir.filter(x => x.id !== s.id); renderSopir(); toast('Sopir dihapus', 'red'); }
+    return;
+  }
+});
+document.getElementById('btnTambahSopir').addEventListener('click', () => formSopirModal(null, false));
+document.getElementById('searchSopir').addEventListener('input', renderSopir);
+document.getElementById('statusFilterSopir').addEventListener('change', renderSopir);
+
+renderSopir();
+</script>
+</body>
+</html>

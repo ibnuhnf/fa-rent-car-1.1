@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manajemen Armada | FE Rent Car</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{background:'#f8f9fb',surface:'#f8f9fb','surface-container-lowest':'#fff','surface-container-low':'#f2f4f6','on-surface':'#191c1e','on-surface-variant':'#4c4546',primary:'#000','on-primary':'#fff',secondary:'#184fd6','on-secondary':'#fff'},fontFamily:{sans:['Inter','sans-serif']},maxWidth:{'container-max':'1280px'}}}}</script>
+<style>
+body{font-family:'Inter',sans-serif;background:#f8f9fb;color:#191c1e}
+.modal-backdrop{opacity:0;transition:opacity .18s ease-out}
+.modal-backdrop.open{opacity:1}
+.modal-panel{opacity:0;transform:translateY(8px) scale(.98);transition:opacity .18s ease-out,transform .18s ease-out}
+.modal-backdrop.open .modal-panel{opacity:1;transform:translateY(0) scale(1)}
+.toast{opacity:0;transform:translateY(12px);transition:opacity .2s ease-out,transform .2s ease-out}
+.toast.show{opacity:1;transform:translateY(0)}
+tr.armada-row{cursor:pointer}
+tr.armada-row:hover td{background:#fafbff}
+</style>
+</head>
+<body class="antialiased">
+<div class="flex min-h-screen">
+<aside class="hidden lg:flex flex-col w-64 bg-white border-r border-gray-200 sticky top-0 h-screen overflow-y-auto">
+<div class="p-5 flex items-center gap-2 border-b border-gray-100">
+<a href="index.html" class="w-9 h-9 rounded-lg bg-black text-white flex items-center justify-center font-bold text-sm">FE</a>
+<div class="leading-tight"><span class="font-bold text-sm block">FE Rent Car</span><span class="text-[10px] text-gray-500 uppercase tracking-wider">Operations</span></div>
+</div>
+<nav class="flex-1 p-3 space-y-1">
+<a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 text-sm transition"><span class="material-symbols-outlined text-xl">dashboard</span>Dashboard</a>
+<a href="armada.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-blue-50 text-blue-700 font-semibold text-sm"><span class="material-symbols-outlined text-xl">directions_car</span>Manajemen Armada</a>
+<a href="sopir.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 text-sm transition"><span class="material-symbols-outlined text-xl">badge</span>Manajemen Sopir</a>
+<a href="verifikasi.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 text-sm transition"><span class="material-symbols-outlined text-xl">verified_user</span>Verifikasi</a>
+<a href="booking.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 text-sm transition"><span class="material-symbols-outlined text-xl">calendar_month</span>Manajemen Booking</a>
+<a href="pelanggan.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 text-sm transition"><span class="material-symbols-outlined text-xl">group</span>Manajemen Pelanggan</a>
+</nav>
+<div class="p-3 border-t border-gray-100">
+<a href="login.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 text-sm font-medium transition"><span class="material-symbols-outlined text-xl">logout</span>Logout</a>
+</div>
+</aside>
+<div class="flex-1 flex flex-col min-w-0">
+<header class="sticky top-0 z-30 bg-white/90 backdrop-blur-xl border-b border-gray-200 px-4 md:px-6 h-16 flex items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<button class="lg:hidden p-2 rounded-lg hover:bg-gray-100"><span class="material-symbols-outlined">menu</span></button>
+<h1 class="text-lg font-bold tracking-tight">Manajemen Armada</h1>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm">AD</div>
+</div>
+</header>
+<main class="flex-1 p-4 md:p-6 space-y-6 max-w-container-max mx-auto w-full">
+<div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+<div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-gray-400 text-lg">search</span>
+<input id="searchInput" type="text" placeholder="Cari plat nopol atau jenis..." class="pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-400 w-full sm:w-64">
+</div>
+<select id="statusFilter" class="bg-gray-50 border border-gray-200 rounded-lg text-sm px-3 py-2 focus:outline-none">
+<option>Semua Status</option><option>Tersedia</option><option>Jalan</option><option>Maintenance</option>
+</select>
+<select id="kategoriFilter" class="bg-gray-50 border border-gray-200 rounded-lg text-sm px-3 py-2 focus:outline-none">
+<option>Semua Kategori</option><option>MPV</option><option>MPV Premium</option><option>SUV</option><option>Sedan</option><option>Hatchback</option><option>Luxury MPV</option>
+</select>
+</div>
+<button id="btnTambahArmada" class="px-4 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition flex items-center gap-1.5 whitespace-nowrap"><span class="material-symbols-outlined text-lg">add</span>Tambah Armada</button>
+</div>
+<div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-sm">
+<thead class="bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
+<tr><th class="px-4 py-3 text-left font-semibold">Plat Nopol</th><th class="px-4 py-3 text-left font-semibold">Jenis Armada</th><th class="px-4 py-3 text-left font-semibold">Kategori</th><th class="px-4 py-3 text-left font-semibold">Transmisi</th><th class="px-4 py-3 text-left font-semibold">Tahun</th><th class="px-4 py-3 text-left font-semibold">Tarif/Hari</th><th class="px-4 py-3 text-left font-semibold">Status & Info Sewa</th><th class="px-4 py-3 text-left font-semibold">Aksi</th></tr>
+</thead>
+<tbody id="armadaBody" class="divide-y divide-gray-100"></tbody>
+</table>
+</div>
+<div class="px-4 py-3 border-t border-gray-100 flex items-center justify-between">
+<p id="armadaCount" class="text-xs text-gray-500"></p>
+</div>
+</div>
+</main>
+<footer class="border-t border-gray-200 bg-white px-6 py-4 mt-auto">
+<div class="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-gray-500">
+<p>&copy; 2024 PT FE Rent Car Indonesia.</p>
+<a href="index.html" class="inline-flex items-center gap-1 hover:text-black transition"><span class="material-symbols-outlined text-sm">arrow_back</span>Beranda Customer</a>
+</div>
+</footer>
+</div>
+</div>
+
+<!-- Modal Host -->
+<div id="modalHost"></div>
+<!-- Toast Host -->
+<div id="toastHost" class="fixed bottom-6 right-6 z-[60] flex flex-col gap-2"></div>
+
+<script>
+const IMG = {
+  avanza:'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=120&h=80&q=80',
+  xenia:'https://images.unsplash.com/photo-1583121278730-4138a2691f83?auto=format&fit=crop&w=120&h=80&q=80',
+  innova:'https://images.unsplash.com/photo-1606664525529-e0b0a1db4d31?auto=format&fit=crop&w=120&h=80&q=80',
+  pajero:'https://images.unsplash.com/photo-1533473359411-7f585e4e2edb?auto=format&fit=crop&w=120&h=80&q=80',
+  fortuner:'https://images.unsplash.com/photo-1559413699-e22f1a4ba8b6?auto=format&fit=crop&w=120&h=80&q=80',
+  alphard:'https://images.unsplash.com/photo-1572790656816-cbeddd5dfa2b?auto=format&fit=crop&w=120&h=80&q=80',
+  vios:'https://images.unsplash.com/photo-1581800824219-67f4ae93f1d4?auto=format&fit=crop&w=120&h=80&q=80',
+  yaris:'https://images.unsplash.com/photo-1590318788200-37d5254a5b30?auto=format&fit=crop&w=120&h=80&q=80'
+};
+
+let armada = [
+  {id:1,plat:'B 1234 AA',name:'Toyota Avanza 1.5 G CVT',type:'MPV',trans:'Matic CVT',year:2023,price:450000,status:'Tersedia',img:IMG.avanza,renter:null,
+   history:[{bookingId:'FE-2026-0801-11',name:'Rizky Ramadhan',start:'01 Agu 2026',end:'03 Agu 2026',days:2,total:900000,status:'Selesai'},{bookingId:'FE-2026-0712-07',name:'Siti Aminah',start:'12 Jul 2026',end:'14 Jul 2026',days:2,total:900000,status:'Selesai'}]},
+  {id:2,plat:'B 2345 BB',name:'Daihatsu Xenia R MT',type:'MPV',trans:'Manual',year:2022,price:400000,status:'Jalan',img:IMG.xenia,
+   renter:{name:'Ahmad Fauzi',phone:'0812-3456-7890',start:'15 Agu 2026',end:'18 Agu 2026',days:3,driver:'Lepas Kunci',bookingId:'FE-2026-0815-02'},
+   history:[{bookingId:'FE-2026-0815-02',name:'Ahmad Fauzi',start:'15 Agu 2026',end:'18 Agu 2026',days:3,total:1200000,status:'Aktif'},{bookingId:'FE-2026-0620-03',name:'Joko Widodo',start:'20 Jun 2026',end:'22 Jun 2026',days:2,total:800000,status:'Selesai'}]},
+  {id:3,plat:'B 3456 CC',name:'Toyota Innova Zenix Hybrid',type:'MPV Premium',trans:'CVT',year:2024,price:750000,status:'Tersedia',img:IMG.innova,renter:null,
+   history:[{bookingId:'FE-2026-0810-14',name:'Clara Angelica',start:'10 Agu 2026',end:'12 Agu 2026',days:2,total:1500000,status:'Selesai'}]},
+  {id:4,plat:'B 4567 DD',name:'Mitsubishi Pajero Sport Dakar',type:'SUV',trans:'Matic AT',year:2022,price:1200000,status:'Maintenance',img:IMG.pajero,renter:null,maintenanceNote:'Servis berkala s/d 16 Agu',
+   history:[{bookingId:'FE-2026-0813-03',name:'Dimas Arya',start:'13 Agu 2026',end:'15 Agu 2026',days:2,total:2400000,status:'Selesai'}]},
+  {id:5,plat:'B 5678 EE',name:'Toyota Fortuner VRZ GR Sport',type:'SUV',trans:'Matic AT',year:2023,price:1500000,status:'Jalan',img:IMG.fortuner,
+   renter:{name:'Eka Putri Handayani',phone:'0878-5566-7788',start:'14 Agu 2026',end:'16 Agu 2026',days:2,driver:'Dengan Sopir (Agus S.)',bookingId:'FE-2026-0814-04'},
+   history:[{bookingId:'FE-2026-0814-04',name:'Eka Putri Handayani',start:'14 Agu 2026',end:'16 Agu 2026',days:2,total:3000000,status:'Aktif'},{bookingId:'FE-2026-0518-09',name:'Budi Santoso',start:'18 Mei 2026',end:'20 Mei 2026',days:2,total:3000000,status:'Selesai'}]},
+  {id:6,plat:'B 6789 FF',name:'Toyota Alphard 2.5 G',type:'Luxury MPV',trans:'Matic AT',year:2021,price:2500000,status:'Tersedia',img:IMG.alphard,renter:null,
+   history:[{bookingId:'FE-2026-0811-05',name:'Farhan Maulana',start:'11 Agu 2026',end:'12 Agu 2026',days:1,total:2500000,status:'Dibatalkan'}]},
+  {id:7,plat:'B 7890 GG',name:'Toyota Vios 1.5 E',type:'Sedan',trans:'Matic CVT',year:2022,price:500000,status:'Jalan',img:IMG.vios,
+   renter:{name:'Gita Lestari',phone:'0857-9988-7766',start:'15 Agu 2026',end:'17 Agu 2026',days:2,driver:'Lepas Kunci',bookingId:'FE-2026-0815-06'},
+   history:[{bookingId:'FE-2026-0815-06',name:'Gita Lestari',start:'15 Agu 2026',end:'17 Agu 2026',days:2,total:1000000,status:'Aktif'}]},
+  {id:8,plat:'B 8901 HH',name:'Toyota Yaris TRD Sportivo',type:'Hatchback',trans:'Matic CVT',year:2021,price:350000,status:'Tersedia',img:IMG.yaris,renter:null,
+   history:[{bookingId:'FE-2026-0805-18',name:'Nadia Safitri',start:'05 Agu 2026',end:'06 Agu 2026',days:1,total:350000,status:'Selesai'}]}
+];
+let nextId = 9;
+
+const fmt = n => 'Rp ' + n.toLocaleString('id-ID');
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- Toast ---------- */
+function toast(msg, kind) {
+  const colors = {green:'bg-green-600',red:'bg-red-600',blue:'bg-blue-600',amber:'bg-amber-600'};
+  const el = document.createElement('div');
+  el.className = `toast ${colors[kind||'blue']} text-white text-sm font-medium px-4 py-2.5 rounded-lg shadow-lg flex items-center gap-2`;
+  el.innerHTML = `<span class="material-symbols-outlined text-base">${kind==='red'?'error':kind==='green'?'check_circle':'info'}</span>${esc(msg)}`;
+  document.getElementById('toastHost').appendChild(el);
+  requestAnimationFrame(() => el.classList.add('show'));
+  setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 220); }, 2800);
+}
+
+/* ---------- Modal core ---------- */
+let modalOpen = false;
+function openModal(html, onMount) {
+  closeModal(true);
+  const host = document.getElementById('modalHost');
+  host.innerHTML = `<div class="modal-backdrop fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+    <div class="modal-panel bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto relative">
+      <button data-close class="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-gray-100 text-gray-500"><span class="material-symbols-outlined">close</span></button>
+      <div id="modalBody">${html}</div>
+    </div>
+  </div>`;
+  const bd = host.firstElementChild;
+  requestAnimationFrame(() => bd.classList.add('open'));
+  bd.addEventListener('click', e => { if (e.target === bd || e.target.closest('[data-close]')) closeModal(); });
+  document.addEventListener('keydown', escClose);
+  modalOpen = true;
+  if (onMount) onMount(host);
+}
+function escClose(e) { if (e.key === 'Escape') closeModal(); }
+function closeModal(silent) {
+  const host = document.getElementById('modalHost');
+  const bd = host.firstElementChild;
+  document.removeEventListener('keydown', escClose);
+  if (!bd) return;
+  bd.classList.remove('open');
+  if (silent) { host.innerHTML = ''; return; }
+  setTimeout(() => { host.innerHTML = ''; }, 180);
+  modalOpen = false;
+}
+
+/* ---------- Status cell ---------- */
+function statusCell(c) {
+  if (c.status === 'Tersedia') return `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-green-50 text-green-700">Tersedia</span><div class="text-xs text-gray-400 mt-1">Siap di pool</div>`;
+  if (c.status === 'Jalan') {
+    const r = c.renter || {};
+    return `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700">Jalan</span>
+      <div class="text-xs font-semibold text-gray-800 mt-1">${esc(r.name||'-')} · ${r.days||0} Hari</div>
+      <div class="text-xs text-gray-500">${esc((r.start||'').replace(' 2026',''))} - ${esc((r.end||'').replace(' 2026',''))}</div>
+      <button data-booking="${r.bookingId||''}" class="mt-1 text-[11px] text-blue-600 hover:underline font-medium">Detail Booking</button>`;
+  }
+  return `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700">Maintenance</span><div class="text-xs text-gray-500 mt-1">${esc(c.maintenanceNote||'Servis berkala')}</div>`;
+}
+
+/* ---------- Render ---------- */
+function renderArmada() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const sf = document.getElementById('statusFilter').value;
+  const kf = document.getElementById('kategoriFilter').value;
+  const body = document.getElementById('armadaBody');
+  const rows = armada.filter(c =>
+    (!q || c.plat.toLowerCase().includes(q) || c.name.toLowerCase().includes(q)) &&
+    (sf === 'Semua Status' || c.status === sf) &&
+    (kf === 'Semua Kategori' || c.type === kf));
+  body.innerHTML = rows.length ? rows.map(c => `<tr class="armada-row" data-id="${c.id}">
+    <td class="px-4 py-3 font-mono font-bold text-xs">${esc(c.plat)}</td>
+    <td class="px-4 py-3"><div class="flex items-center gap-2.5"><img src="${c.img}" alt="" class="w-12 h-8 object-cover rounded border border-gray-200" onerror="this.style.display='none'"><span class="font-medium">${esc(c.name)}</span></div></td>
+    <td class="px-4 py-3 text-gray-600">${esc(c.type)}</td>
+    <td class="px-4 py-3 text-gray-600">${esc(c.trans)}</td>
+    <td class="px-4 py-3 text-gray-600">${c.year}</td>
+    <td class="px-4 py-3 font-semibold whitespace-nowrap">${fmt(c.price)}</td>
+    <td class="px-4 py-3">${statusCell(c)}</td>
+    <td class="px-4 py-3" data-noclick><div class="flex gap-1">
+      <button data-edit="${c.id}" title="Edit" class="p-1.5 rounded-lg hover:bg-blue-50 text-blue-600"><span class="material-symbols-outlined text-lg">edit</span></button>
+      <button data-del="${c.id}" title="Hapus" class="p-1.5 rounded-lg hover:bg-red-50 text-red-600"><span class="material-symbols-outlined text-lg">delete</span></button>
+    </div></td>
+  </tr>`).join('') : `<tr><td colspan="8" class="px-4 py-10 text-center text-gray-400 text-sm">Tidak ada armada yang cocok dengan filter.</td></tr>`;
+  document.getElementById('armadaCount').textContent = `Menampilkan ${rows.length} dari ${armada.length} armada`;
+}
+
+/* ---------- Form modal (tambah/edit) ---------- */
+function formModal(car) {
+  const isEdit = !!car;
+  const c = car || {plat:'',name:'',type:'MPV',trans:'Matic CVT',year:2024,price:'',status:'Tersedia'};
+  openModal(`<div class="p-6 pb-5">
+    <h3 class="text-lg font-bold pr-8">${isEdit ? 'Edit Armada' : 'Tambah Armada Baru'}</h3>
+    <p class="text-xs text-gray-500 mt-0.5">${isEdit ? esc(car.plat) : 'Isi data kendaraan untuk menambah armada'}</p>
+  </div>
+  <form id="armadaForm" class="px-6 pb-6 space-y-3.5">
+    <div><label class="block text-xs font-semibold text-gray-600 mb-1">Plat Nopol <span class="text-red-500">*</span></label><input name="plat" required value="${esc(c.plat)}" placeholder="B 1234 AA" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-400"></div>
+    <div><label class="block text-xs font-semibold text-gray-600 mb-1">Jenis Armada <span class="text-red-500">*</span></label><input name="name" required value="${esc(c.name)}" placeholder="Toyota Avanza 1.5 G CVT" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-400"></div>
+    <div class="grid grid-cols-2 gap-3">
+      <div><label class="block text-xs font-semibold text-gray-600 mb-1">Kategori</label><select name="type" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none">
+        ${['MPV','MPV Premium','SUV','Sedan','Hatchback','Luxury MPV'].map(t=>`<option ${c.type===t?'selected':''}>${t}</option>`).join('')}</select></div>
+      <div><label class="block text-xs font-semibold text-gray-600 mb-1">Transmisi</label><select name="trans" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none">
+        ${['Manual','Matic AT','Matic CVT','CVT'].map(t=>`<option ${c.trans===t?'selected':''}>${t}</option>`).join('')}</select></div>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <div><label class="block text-xs font-semibold text-gray-600 mb-1">Tahun <span class="text-red-500">*</span></label><input name="year" type="number" min="1990" max="2027" required value="${c.year}" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-400"></div>
+      <div><label class="block text-xs font-semibold text-gray-600 mb-1">Tarif/Hari (Rp) <span class="text-red-500">*</span></label><input name="price" type="number" min="100000" step="50000" required value="${c.price}" placeholder="450000" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-400"></div>
+    </div>
+    <div><label class="block text-xs font-semibold text-gray-600 mb-1">Status</label><select name="status" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none">
+      ${['Tersedia','Jalan','Maintenance'].map(t=>`<option ${c.status===t?'selected':''}>${t}</option>`).join('')}</select></div>
+    <div class="flex gap-2 pt-1">
+      <button type="button" data-close class="flex-1 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-700 text-sm font-semibold hover:bg-gray-200 transition">Batal</button>
+      <button type="submit" class="flex-1 px-4 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition">${isEdit ? 'Simpan Perubahan' : 'Tambah Armada'}</button>
+    </div>
+  </form>`, host => {
+    host.querySelector('#armadaForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const f = new FormData(e.target);
+      const data = {plat:f.get('plat').trim().toUpperCase(),name:f.get('name').trim(),type:f.get('type'),trans:f.get('trans'),year:+f.get('year'),price:+f.get('price'),status:f.get('status')};
+      if (isEdit) {
+        Object.assign(car, data);
+        if (car.status !== 'Jalan') car.renter = null;
+        if (car.status === 'Maintenance' && !car.maintenanceNote) car.maintenanceNote = 'Servis berkala s/d 16 Agu';
+        toast('Data armada diperbarui', 'green');
+      } else {
+        armada.push({id:nextId++, ...data, img:IMG.avanza, renter:null, history:[]});
+        toast('Armada baru ditambahkan', 'green');
+      }
+      closeModal(); renderArmada();
+    });
+  });
+}
+
+/* ---------- Detail modal ---------- */
+function detailModal(car) {
+  const r = car.renter;
+  const badge = {Tersedia:'bg-green-50 text-green-700',Jalan:'bg-blue-50 text-blue-700',Maintenance:'bg-amber-50 text-amber-700'}[car.status];
+  const hBadge = {Selesai:'bg-green-50 text-green-700',Aktif:'bg-blue-50 text-blue-700',Dibatalkan:'bg-red-50 text-red-700'};
+  openModal(`<div class="p-6 pb-4 border-b border-gray-100">
+    <div class="flex items-start gap-4 pr-8">
+      <img src="${car.img}" alt="" class="w-28 h-20 object-cover rounded-lg border border-gray-200" onerror="this.style.display='none'">
+      <div><h3 class="text-lg font-bold leading-tight">${esc(car.name)}</h3>
+      <p class="font-mono text-sm font-bold text-gray-600 mt-0.5">${esc(car.plat)}</p>
+      <span class="inline-block mt-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${badge}">${car.status}</span></div>
+    </div>
+  </div>
+  <div class="p-6 space-y-5">
+    <div>
+      <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Spesifikasi</h4>
+      <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+        <div class="flex justify-between border-b border-gray-50 pb-1.5"><span class="text-gray-500">Kategori</span><span class="font-medium">${esc(car.type)}</span></div>
+        <div class="flex justify-between border-b border-gray-50 pb-1.5"><span class="text-gray-500">Transmisi</span><span class="font-medium">${esc(car.trans)}</span></div>
+        <div class="flex justify-between border-b border-gray-50 pb-1.5"><span class="text-gray-500">Tahun</span><span class="font-medium">${car.year}</span></div>
+        <div class="flex justify-between border-b border-gray-50 pb-1.5"><span class="text-gray-500">Tarif/Hari</span><span class="font-medium">${fmt(car.price)}</span></div>
+      </div>
+    </div>
+    ${car.status === 'Maintenance' ? `<div class="bg-amber-50 border border-amber-100 rounded-lg p-3 text-sm text-amber-800 flex items-center gap-2"><span class="material-symbols-outlined text-base">build</span>${esc(car.maintenanceNote||'Servis berkala')}</div>` : ''}
+    ${r ? `<div>
+      <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Penyewa Saat Ini</h4>
+      <div class="bg-blue-50/60 border border-blue-100 rounded-lg p-3.5 space-y-2 text-sm">
+        <div class="flex items-center justify-between"><span class="text-gray-600">Penyewa</span><span class="font-bold">${esc(r.name)}</span></div>
+        <div class="flex items-center justify-between"><span class="text-gray-600">No. WhatsApp</span><span class="font-medium">${esc(r.phone)}</span></div>
+        <div class="flex items-center justify-between"><span class="text-gray-600">Periode Sewa</span><span class="font-medium">${esc(r.start)} - ${esc(r.end)}</span></div>
+        <div class="flex items-center justify-between"><span class="text-gray-600">Durasi</span><span class="font-medium">${r.days} Hari</span></div>
+        <div class="flex items-center justify-between"><span class="text-gray-600">Tipe Layanan</span><span class="font-medium">${esc(r.driver)}</span></div>
+        <div class="flex items-center justify-between border-t border-blue-100 pt-2"><span class="text-gray-600">Estimasi Kembali</span><span class="font-bold text-blue-700">${esc(r.end)} 2026</span></div>
+        <button data-booking="${r.bookingId}" class="text-xs text-blue-600 hover:underline font-medium flex items-center gap-1"><span class="material-symbols-outlined text-sm">open_in_new</span>Lihat Detail Booking ${esc(r.bookingId)}</button>
+      </div>
+    </div>` : `<div class="bg-gray-50 border border-gray-100 rounded-lg p-3 text-sm text-gray-500 flex items-center gap-2"><span class="material-symbols-outlined text-base">check_circle</span>Belum ada penyewa aktif. Siap di pool.</div>`}
+    <div>
+      <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Riwayat Booking</h4>
+      ${car.history.length ? `<div class="space-y-2">${car.history.map(h => `<div class="border border-gray-100 rounded-lg p-3 flex items-center justify-between gap-3">
+        <div class="min-w-0"><p class="font-mono text-xs font-bold">${esc(h.bookingId)}</p>
+        <p class="text-sm font-medium truncate">${esc(h.name)}</p>
+        <p class="text-xs text-gray-500">${esc(h.start)} - ${esc(h.end)} · ${h.days} hari · ${fmt(h.total)}</p></div>
+        <span class="px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap ${hBadge[h.status]||'bg-gray-50'}">${h.status}</span>
+      </div>`).join('')}</div>` : `<p class="text-sm text-gray-400">Belum ada riwayat booking.</p>`}
+    </div>
+    <div class="flex gap-2 pt-1">
+      <button data-edit="${car.id}" class="flex-1 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-700 text-sm font-semibold hover:bg-gray-200 transition flex items-center justify-center gap-1.5"><span class="material-symbols-outlined text-base">edit</span>Edit Armada</button>
+      <button data-close class="flex-1 px-4 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition">Tutup</button>
+    </div>
+  </div>`);
+}
+
+function bookingInfoModal(bookingId) {
+  const car = armada.find(c => c.renter && c.renter.bookingId === bookingId);
+  if (!car) { toast('Data booking tidak ditemukan', 'red'); return; }
+  const r = car.renter;
+  openModal(`<div class="p-6 pb-4 border-b border-gray-100">
+    <h3 class="text-lg font-bold pr-8">Detail Booking</h3>
+    <p class="font-mono text-sm font-bold text-blue-600 mt-0.5">${esc(bookingId)}</p>
+  </div>
+  <div class="p-6 space-y-3 text-sm">
+    <div class="flex items-center justify-between border-b border-gray-50 pb-2"><span class="text-gray-500">Kendaraan</span><span class="font-medium">${esc(car.name)} · ${esc(car.plat)}</span></div>
+    <div class="flex items-center justify-between border-b border-gray-50 pb-2"><span class="text-gray-500">Penyewa</span><span class="font-bold">${esc(r.name)}</span></div>
+    <div class="flex items-center justify-between border-b border-gray-50 pb-2"><span class="text-gray-500">No. WhatsApp</span><span class="font-medium">${esc(r.phone)}</span></div>
+    <div class="flex items-center justify-between border-b border-gray-50 pb-2"><span class="text-gray-500">Periode</span><span class="font-medium">${esc(r.start)} - ${esc(r.end)}</span></div>
+    <div class="flex items-center justify-between border-b border-gray-50 pb-2"><span class="text-gray-500">Durasi</span><span class="font-medium">${r.days} Hari</span></div>
+    <div class="flex items-center justify-between border-b border-gray-50 pb-2"><span class="text-gray-500">Layanan</span><span class="font-medium">${esc(r.driver)}</span></div>
+    <div class="flex items-center justify-between"><span class="text-gray-500">Total Tarif</span><span class="font-bold">${fmt(r.days * car.price)}</span></div>
+    <button data-close class="w-full mt-3 px-4 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition">Tutup</button>
+  </div>`);
+}
+
+/* ---------- Events ---------- */
+document.getElementById('armadaBody').addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (b && b.dataset.close !== undefined) return;
+  if (b) {
+    e.stopPropagation();
+    if (b.dataset.edit) { formModal(armada.find(c => c.id === +b.dataset.edit)); return; }
+    if (b.dataset.del) {
+      const car = armada.find(c => c.id === +b.dataset.del);
+      if (confirm(`Hapus armada ${car.plat} - ${car.name}?`)) {
+        armada = armada.filter(c => c.id !== car.id);
+        renderArmada(); toast('Armada dihapus', 'red');
+      }
+      return;
+    }
+    if (b.dataset.booking) { bookingInfoModal(b.dataset.booking); return; }
+  }
+  const row = e.target.closest('tr.armada-row');
+  if (row) detailModal(armada.find(c => c.id === +row.dataset.id));
+});
+document.getElementById('modalHost').addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  if (b.dataset.edit) { formModal(armada.find(c => c.id === +b.dataset.edit)); return; }
+  if (b.dataset.booking) { bookingInfoModal(b.dataset.booking); return; }
+});
+document.getElementById('btnTambahArmada').addEventListener('click', () => formModal(null));
+document.getElementById('searchInput').addEventListener('input', renderArmada);
+document.getElementById('statusFilter').addEventListener('change', renderArmada);
+document.getElementById('kategoriFilter').addEventListener('change', renderArmada);
+
+renderArmada();
+</script>
+</body>
+</html>

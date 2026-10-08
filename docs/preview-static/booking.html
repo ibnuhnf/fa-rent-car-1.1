@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manajemen Booking | FE Rent Car</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{background:'#f8f9fb',surface:'#f8f9fb','surface-container-lowest':'#fff','surface-container-low':'#f2f4f6','on-surface':'#191c1e','on-surface-variant':'#4c4546',primary:'#000','on-primary':'#fff',secondary:'#184fd6','on-secondary':'#fff'},fontFamily:{sans:['Inter','sans-serif']},maxWidth:{'container-max':'1280px'}}}}</script>
+<style>
+body{font-family:'Inter',sans-serif;background:#f8f9fb;color:#191c1e}
+.modal-backdrop{opacity:0;transition:opacity .18s ease-out}
+.modal-backdrop.open{opacity:1}
+.modal-panel{opacity:0;transform:translateY(8px) scale(.98);transition:opacity .18s ease-out,transform .18s ease-out}
+.modal-backdrop.open .modal-panel{opacity:1;transform:translateY(0) scale(1)}
+.toast{opacity:0;transform:translateY(12px);transition:opacity .2s ease-out,transform .2s ease-out}
+.toast.show{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body class="antialiased">
+<div class="flex min-h-screen">
+<aside class="hidden lg:flex flex-col w-64 bg-white border-r border-gray-200 sticky top-0 h-screen overflow-y-auto">
+<div class="p-5 flex items-center gap-2 border-b border-gray-100">
+<a href="index.html" class="w-9 h-9 rounded-lg bg-black text-white flex items-center justify-center font-bold text-sm">FE</a>
+<div class="leading-tight"><span class="font-bold text-sm block">FE Rent Car</span><span class="text-[10px] text-gray-500 uppercase tracking-wider">Operations</span></div>
+</div>
+<nav class="flex-1 p-3 space-y-1">
+<a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 text-sm transition"><span class="material-symbols-outlined text-xl">dashboard</span>Dashboard</a>
+<a href="armada.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 text-sm transition"><span class="material-symbols-outlined text-xl">directions_car</span>Manajemen Armada</a>
+<a href="sopir.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 text-sm transition"><span class="material-symbols-outlined text-xl">badge</span>Manajemen Sopir</a>
+<a href="verifikasi.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 text-sm transition"><span class="material-symbols-outlined text-xl">verified_user</span>Verifikasi</a>
+<a href="booking.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-blue-50 text-blue-700 font-semibold text-sm"><span class="material-symbols-outlined text-xl">calendar_month</span>Manajemen Booking</a>
+<a href="pelanggan.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 text-sm transition"><span class="material-symbols-outlined text-xl">group</span>Manajemen Pelanggan</a>
+</nav>
+<div class="p-3 border-t border-gray-100">
+<a href="login.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 text-sm font-medium transition"><span class="material-symbols-outlined text-xl">logout</span>Logout</a>
+</div>
+</aside>
+<div class="flex-1 flex flex-col min-w-0">
+<header class="sticky top-0 z-30 bg-white/90 backdrop-blur-xl border-b border-gray-200 px-4 md:px-6 h-16 flex items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<button class="lg:hidden p-2 rounded-lg hover:bg-gray-100"><span class="material-symbols-outlined">menu</span></button>
+<h1 class="text-lg font-bold tracking-tight">Manajemen Booking</h1>
+</div>
+<div class="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm">AD</div>
+</header>
+<main class="flex-1 p-4 md:p-6 space-y-6 max-w-container-max mx-auto w-full">
+<div id="tabs" class="flex border-b border-gray-200 gap-6 overflow-x-auto"></div>
+<div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-sm">
+<thead class="bg-gray-50 text-xs uppercase tracking-wider text-gray-500">
+<tr><th class="px-4 py-3 text-left font-semibold">No. Booking</th><th class="px-4 py-3 text-left font-semibold">Pelanggan</th><th class="px-4 py-3 text-left font-semibold">Armada</th><th class="px-4 py-3 text-left font-semibold">Tanggal Sewa</th><th class="px-4 py-3 text-left font-semibold">Total</th><th class="px-4 py-3 text-left font-semibold">Status</th><th class="px-4 py-3 text-left font-semibold">Aksi</th></tr>
+</thead>
+<tbody id="bookingBody" class="divide-y divide-gray-100"></tbody>
+</table>
+</div>
+</div>
+</main>
+<footer class="border-t border-gray-200 bg-white px-6 py-4 mt-auto">
+<div class="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-gray-500">
+<p>&copy; 2024 PT FE Rent Car Indonesia.</p>
+<a href="index.html" class="inline-flex items-center gap-1 hover:text-black transition"><span class="material-symbols-outlined text-sm">arrow_back</span>Beranda Customer</a>
+</div>
+</footer>
+</div>
+</div>
+
+<div id="modalHost"></div>
+<div id="toastHost" class="fixed bottom-6 right-6 z-[60] flex flex-col gap-2"></div>
+
+<script>
+let bookings = [
+  {id:1,bookingId:'FE-2026-0815-01',name:'Bambang Wicaksono',phone:'0812-3344-5566',car:'Toyota Avanza 1.5 G CVT',plat:'B 1234 AA',start:'15 Agu 2026',end:'18 Agu 2026',days:3,driver:'Lepas Kunci',pickup:'Kantor Pusat',total:1350000,status:'Baru',note:'Ambil pagi sekitar 08.00',reason:null},
+  {id:2,bookingId:'FE-2026-0814-02',name:'Clara Angelica',phone:'0813-9876-5432',car:'Toyota Innova Zenix Hybrid',plat:'B 3456 CC',start:'14 Agu 2026',end:'17 Agu 2026',days:3,driver:'Dengan Sopir (Agus S.)',pickup:'Bandara HLP',total:2250000,status:'Aktif',note:'Perlu kursi bayi',reason:null},
+  {id:3,bookingId:'FE-2026-0813-03',name:'Dimas Arya',phone:'0856-1122-3344',car:'Mitsubishi Pajero Sport Dakar',plat:'B 4567 DD',start:'13 Agu 2026',end:'15 Agu 2026',days:2,driver:'Dengan Sopir (Dedi K.)',pickup:'Kantor Pusat',total:2400000,status:'Selesai',note:null,reason:null},
+  {id:4,bookingId:'FE-2026-0812-04',name:'Eka Putri Handayani',phone:'0878-5566-7788',car:'Toyota Fortuner VRZ GR Sport',plat:'B 5678 EE',start:'12 Agu 2026',end:'14 Agu 2026',days:2,driver:'Lepas Kunci',pickup:'Kantor Cabang Depok',total:3000000,status:'Selesai',note:null,reason:null},
+  {id:5,bookingId:'FE-2026-0811-05',name:'Farhan Maulana',phone:'0811-2233-4455',car:'Toyota Alphard 2.5 G',plat:'B 6789 FF',start:'11 Agu 2026',end:'12 Agu 2026',days:1,driver:'Dengan Sopir (Gunawan H.)',pickup:'Bandara HLP',total:2500000,status:'Dibatalkan',note:null,reason:'Pelanggan membatalkan perjalanan.'},
+  {id:6,bookingId:'FE-2026-0815-06',name:'Gita Lestari',phone:'0857-9988-7766',car:'Toyota Vios 1.5 E',plat:'B 7890 GG',start:'15 Agu 2026',end:'17 Agu 2026',days:2,driver:'Lepas Kunci',pickup:'Kantor Pusat',total:1000000,status:'Aktif',note:null,reason:null},
+  {id:7,bookingId:'FE-2026-0814-07',name:'Hendra Saputra',phone:'0813-4455-6677',car:'Toyota Yaris TRD Sportivo',plat:'B 8901 HH',start:'14 Agu 2026',end:'15 Agu 2026',days:1,driver:'Lepas Kunci',pickup:'Kantor Cabang Tangerang',total:350000,status:'Baru',note:'Menunggu verifikasi dokumen',reason:null}
+];
+let activeTab = 'Semua';
+const FLOW = ['Baru','Aktif','Selesai','Dibatalkan'];
+const fmt = n => 'Rp ' + n.toLocaleString('id-ID');
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function toast(msg, kind) {
+  const colors = {green:'bg-green-600',red:'bg-red-600',blue:'bg-blue-600',amber:'bg-amber-500'};
+  const el = document.createElement('div');
+  el.className = `toast ${colors[kind||'blue']} text-white text-sm font-medium px-4 py-2.5 rounded-lg shadow-lg flex items-center gap-2`;
+  el.innerHTML = `<span class="material-symbols-outlined text-base">${kind==='red'?'error':kind==='green'?'check_circle':kind==='amber'?'schedule':'info'}</span>${esc(msg)}`;
+  document.getElementById('toastHost').appendChild(el);
+  requestAnimationFrame(() => el.classList.add('show'));
+  setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 220); }, 2800);
+}
+
+function openModal(html, onMount) {
+  closeModal(true);
+  const host = document.getElementById('modalHost');
+  host.innerHTML = `<div class="modal-backdrop fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+    <div class="modal-panel bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto relative">
+      <button data-close class="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-gray-100 text-gray-500"><span class="material-symbols-outlined">close</span></button>
+      <div>${html}</div>
+    </div>
+  </div>`;
+  const bd = host.firstElementChild;
+  requestAnimationFrame(() => bd.classList.add('open'));
+  bd.addEventListener('click', e => { if (e.target === bd || e.target.closest('[data-close]')) closeModal(); });
+  document.addEventListener('keydown', escClose);
+  if (onMount) onMount(host);
+}
+function escClose(e) { if (e.key === 'Escape') closeModal(); }
+function closeModal(silent) {
+  const host = document.getElementById('modalHost');
+  document.removeEventListener('keydown', escClose);
+  const bd = host.firstElementChild;
+  if (!bd) return;
+  bd.classList.remove('open');
+  if (silent) { host.innerHTML = ''; return; }
+  setTimeout(() => { host.innerHTML = ''; }, 180);
+}
+
+function statusBadge(s) {
+  const m = {Baru:'bg-amber-50 text-amber-700',Aktif:'bg-blue-50 text-blue-700',Selesai:'bg-green-50 text-green-700',Dibatalkan:'bg-red-50 text-red-700'};
+  return `<span class="px-2.5 py-1 rounded-full text-xs font-bold ${m[s]}">${s}</span>`;
+}
+
+function renderTabs() {
+  const tabs = ['Semua','Baru','Aktif','Selesai','Dibatalkan'];
+  const cnt = t => t === 'Semua' ? bookings.length : bookings.filter(b => b.status === t).length;
+  document.getElementById('tabs').innerHTML = tabs.map(t => {
+    const on = activeTab === t;
+    const n = cnt(t);
+    return `<button data-tab="${t}" class="pb-3 border-b-2 ${on?'border-blue-600 text-blue-600 font-semibold':'border-transparent text-gray-500 hover:text-black'} text-sm flex items-center gap-2 whitespace-nowrap">
+      ${t} <span class="px-2 py-0.5 rounded-full text-xs ${on?'font-bold '+(t==='Baru'?'bg-amber-100 text-amber-800':t==='Aktif'?'bg-blue-100 text-blue-800':'bg-gray-100 text-gray-600'):'bg-gray-100 text-gray-600'}">${n}</span></button>`;
+  }).join('');
+}
+
+function renderBookings() {
+  const rows = bookings.filter(b => activeTab === 'Semua' || b.status === activeTab);
+  document.getElementById('bookingBody').innerHTML = rows.length ? rows.map(b => `<tr>
+    <td class="px-4 py-3 font-mono font-bold text-xs">${esc(b.bookingId)}</td>
+    <td class="px-4 py-3 font-medium whitespace-nowrap">${esc(b.name)}</td>
+    <td class="px-4 py-3 text-gray-600 whitespace-nowrap">${esc(b.car)}</td>
+    <td class="px-4 py-3 text-gray-600 whitespace-nowrap text-xs">${esc(b.start)} - ${esc(b.end)}</td>
+    <td class="px-4 py-3 font-semibold whitespace-nowrap">${fmt(b.total)}</td>
+    <td class="px-4 py-3">${statusBadge(b.status)}</td>
+    <td class="px-4 py-3"><div class="flex items-center gap-1.5">
+      <button data-detail="${b.id}" class="text-xs text-blue-600 hover:underline font-medium">Detail</button>
+      ${b.status!=='Dibatalkan'&&b.status!=='Selesai'?`<button data-change="${b.id}" class="text-xs text-gray-600 hover:text-black font-medium flex items-center gap-0.5"><span class="material-symbols-outlined text-sm">swap_horiz</span>Ubah Status</button>`:''}
+      ${b.status!=='Dibatalkan'&&b.status!=='Selesai'?`<button data-cancel="${b.id}" class="text-xs text-red-600 hover:underline font-medium">Batalkan</button>`:''}
+    </div></td>
+  </tr>`).join('') : `<tr><td colspan="7" class="px-4 py-10 text-center text-gray-400 text-sm">Tidak ada booking ${activeTab==='Semua'?'':activeTab.toLowerCase()}.</td></tr>`;
+  renderTabs();
+}
+
+function detailModal(b) {
+  openModal(`<div class="p-6 pb-4 border-b border-gray-100 flex items-start justify-between gap-3 pr-8">
+    <div><h3 class="text-lg font-bold">Detail Booking</h3><p class="font-mono text-sm font-bold text-blue-600 mt-0.5">${esc(b.bookingId)}</p></div>
+    ${statusBadge(b.status)}
+  </div>
+  <div class="p-6 space-y-3 text-sm">
+    <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500">Informasi Pelanggan</h4>
+    <div class="flex items-center justify-between border-b border-gray-50 pb-2"><span class="text-gray-500">Nama</span><span class="font-medium">${esc(b.name)}</span></div>
+    <div class="flex items-center justify-between border-b border-gray-50 pb-2"><span class="text-gray-500">No. WhatsApp</span><span class="font-medium">${esc(b.phone)}</span></div>
+    <h4 class="text-xs font-bold uppercase tracking-wider text-gray-500 pt-1">Informasi Sewa</h4>
+    <div class="flex items-center justify-between border-b border-gray-50 pb-2"><span class="text-gray-500">Kendaraan</span><span class="font-medium">${esc(b.car)} · <span class="font-mono text-xs">${esc(b.plat)}</span></span></div>
+    <div class="flex items-center justify-between border-b border-gray-50 pb-2"><span class="text-gray-500">Periode</span><span class="font-medium">${esc(b.start)} - ${esc(b.end)}</span></div>
+    <div class="flex items-center justify-between border-b border-gray-50 pb-2"><span class="text-gray-500">Durasi</span><span class="font-medium">${b.days} Hari</span></div>
+    <div class="flex items-center justify-between border-b border-gray-50 pb-2"><span class="text-gray-500">Layanan</span><span class="font-medium">${esc(b.driver)}</span></div>
+    <div class="flex items-center justify-between border-b border-gray-50 pb-2"><span class="text-gray-500">Lokasi Ambil</span><span class="font-medium">${esc(b.pickup)}</span></div>
+    <div class="flex items-center justify-between"><span class="text-gray-500">Total Tagihan</span><span class="font-bold">${fmt(b.total)}</span></div>
+    ${b.note ? `<div class="bg-amber-50 border border-amber-100 rounded-lg p-3 text-amber-800 flex items-start gap-2"><span class="material-symbols-outlined text-base mt-0.5">sticky_note_2</span><span>${esc(b.note)}</span></div>` : ''}
+    ${b.reason ? `<div class="bg-red-50 border border-red-100 rounded-lg p-3 text-red-700 flex items-start gap-2"><span class="material-symbols-outlined text-base mt-0.5">info</span><span>Alasan pembatalan: ${esc(b.reason)}</span></div>` : ''}
+    <button data-close class="w-full mt-2 px-4 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition">Tutup</button>
+  </div>`);
+}
+
+function changeStatusModal(b) {
+  const next = b.status === 'Baru' ? ['Aktif','Dibatalkan'] : b.status === 'Aktif' ? ['Selesai','Dibatalkan'] : FLOW.filter(s => s !== b.status);
+  openModal(`<div class="p-6 pb-4 border-b border-gray-100">
+    <h3 class="text-lg font-bold pr-8">Ubah Status Booking</h3>
+    <p class="text-xs text-gray-500 mt-0.5">${esc(b.bookingId)} · status saat ini: <span class="font-semibold text-gray-700">${b.status}</span></p>
+  </div>
+  <div class="p-6 space-y-2">
+    ${next.map(s => `<button data-set="${s}" class="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-gray-200 hover:border-blue-400 hover:bg-blue-50/40 transition text-sm">
+      <span class="flex items-center gap-2.5 font-medium">${statusBadge(s)}</span>
+      <span class="material-symbols-outlined text-lg text-gray-300 group-hover:text-blue-400">arrow_forward</span>
+    </button>`).join('')}
+    <button data-close class="w-full mt-2 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-700 text-sm font-semibold hover:bg-gray-200 transition">Batal</button>
+  </div>`, host => {
+    host.querySelectorAll('[data-set]').forEach(btn => btn.addEventListener('click', () => {
+      const s = btn.dataset.set;
+      if (s === 'Dibatalkan') { closeModal(); askCancelReason(b); return; }
+      b.status = s;
+      closeModal(); renderBookings(); toast(`Status ${b.bookingId} diubah menjadi ${s}`, s==='Selesai'?'green':'blue');
+    }));
+  });
+}
+
+function askCancelReason(b) {
+  openModal(`<div class="p-6 pb-4 border-b border-gray-100">
+    <div class="flex items-center gap-3 pr-8">
+      <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center"><span class="material-symbols-outlined">cancel</span></div>
+      <div><h3 class="text-lg font-bold">Batalkan Booking</h3><p class="text-xs text-gray-500 mt-0.5">${esc(b.bookingId)} · ${esc(b.name)}</p></div>
+    </div>
+  </div>
+  <form id="cancelForm" class="p-6 space-y-3">
+    <div><label class="block text-xs font-semibold text-gray-600 mb-1">Alasan Pembatalan <span class="text-red-500">*</span></label>
+      <textarea name="reason" rows="3" required placeholder="Contoh: Pelanggan membatalkan perjalanan..." class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-400 resize-none"></textarea></div>
+    <div class="flex gap-2 pt-1">
+      <button type="button" data-close class="flex-1 px-4 py-2.5 rounded-lg bg-gray-100 text-gray-700 text-sm font-semibold hover:bg-gray-200 transition">Kembali</button>
+      <button type="submit" class="flex-1 px-4 py-2.5 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition">Batalkan Booking</button>
+    </div>
+  </form>`, host => {
+    host.querySelector('#cancelForm').addEventListener('submit', e => {
+      e.preventDefault();
+      b.status = 'Dibatalkan';
+      b.reason = new FormData(e.target).get('reason').trim();
+      closeModal(); renderBookings(); toast(`Booking ${b.bookingId} dibatalkan`, 'red');
+    });
+  });
+}
+
+document.getElementById('tabs').addEventListener('click', e => {
+  const b = e.target.closest('[data-tab]');
+  if (b) { activeTab = b.dataset.tab; renderBookings(); }
+});
+document.getElementById('bookingBody').addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  const bk = bookings.find(x => x.id === +b.dataset.detail || x.id === +b.dataset.change || x.id === +b.dataset.cancel);
+  if (!bk) return;
+  if (b.dataset.detail) detailModal(bk);
+  else if (b.dataset.change) changeStatusModal(bk);
+  else if (b.dataset.cancel) askCancelReason(bk);
+});
+
+renderBookings();
+</script>
+</body>
+</html>

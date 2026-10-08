@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FE Rent Car | Premium Mobility</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        background: '#f8f9fb',
+        surface: '#f8f9fb',
+        'surface-container-lowest': '#ffffff',
+        'surface-container-low': '#f2f4f6',
+        'surface-container': '#edeef0',
+        'surface-container-high': '#e7e8ea',
+        'on-surface': '#191c1e',
+        'on-surface-variant': '#4c4546',
+        primary: '#000000',
+        'on-primary': '#ffffff',
+        secondary: '#184fd6',
+        'on-secondary': '#ffffff',
+        'secondary-container': '#3d6af0',
+        outline: '#7e7576',
+        'outline-variant': '#cfc4c5'
+      },
+      fontFamily: { sans: ['Inter', 'sans-serif'] },
+      maxWidth: { 'container-max': '1280px' }
+    }
+  }
+}
+</script>
+<style>body{font-family:'Inter',sans-serif;background:#f8f9fb;color:#191c1e}</style>
+</head>
+<body class="antialiased">
+
+<header class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-100">
+<div class="max-w-container-max mx-auto px-5 md:px-6 h-20 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 rounded-lg bg-black text-white flex items-center justify-center font-bold text-lg">FE</div>
+<div class="leading-tight"><span class="font-bold block">FE Rent Car</span><span class="text-xs text-gray-500 uppercase tracking-wider">Rental & Mobility</span></div>
+</div>
+<nav class="hidden lg:flex items-center gap-1 bg-gray-50 p-1 rounded-xl">
+<a href="index.html" class="px-3 py-2 rounded-lg bg-gray-200 font-semibold text-sm">Beranda</a>
+<a href="katalog.html" class="px-3 py-2 rounded-lg text-gray-500 hover:text-black hover:bg-gray-100 text-sm transition">Katalog Armada</a>
+<a href="#tata-cara" class="px-3 py-2 rounded-lg text-gray-500 hover:text-black hover:bg-gray-100 text-sm transition">Tata Cara Sewa</a>
+<a href="cek-status.html" class="px-3 py-2 rounded-lg text-gray-500 hover:text-black hover:bg-gray-100 text-sm transition">Cek Status</a>
+<a href="#kontak" class="px-3 py-2 rounded-lg text-gray-500 hover:text-black hover:bg-gray-100 text-sm transition">Kontak</a>
+</nav>
+<div class="flex items-center gap-2">
+<a href="https://wa.me/6281298421920" class="hidden xl:flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition"><span class="material-symbols-outlined text-lg">chat</span>WhatsApp</a>
+<a href="katalog.html" class="px-4 py-2.5 rounded-lg bg-black text-white text-sm font-semibold hover:bg-gray-800 transition flex items-center gap-1.5"><span class="material-symbols-outlined text-lg">directions_car</span>Cek Ketersediaan</a>
+</div>
+</div>
+</header>
+
+<main class="pt-20">
+
+<section class="bg-white pb-16 pt-8">
+<div class="max-w-container-max mx-auto px-5 md:px-6 flex flex-col items-center">
+<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 text-sm mb-6 border border-gray-100">
+<span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+<span class="text-gray-500">Inventaris Pool Aktif: <strong class="text-black">45 Armada Siap Jalan</strong></span>
+</div>
+<div class="max-w-4xl text-center mb-10">
+<h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">Sewa Mobil Lepas Kunci & Dengan Sopir di Jakarta</h1>
+<p class="text-lg text-gray-500 max-w-2xl mx-auto">45 armada siap jalan. Cek ketersediaan mobil sesuai tanggal, kalkulasi total tarif transparan tanpa biaya siluman.</p>
+</div>
+<div class="w-full max-w-5xl bg-white rounded-xl border border-gray-200 shadow-md p-6 -mb-24 relative z-10">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100 mb-6">
+<div class="inline-flex p-1 rounded-lg bg-gray-50" id="mode-toggle">
+<button id="btn-lepas" class="px-5 py-2 rounded-lg text-sm font-semibold bg-white shadow-sm transition" onclick="toggleMode('lepas')">Lepas Kunci</button>
+<button id="btn-sopir" class="px-5 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-black transition flex items-center gap-1.5" onclick="toggleMode('sopir')">Dengan Sopir <span class="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">+Rp 200rb</span></button>
+</div>
+<div class="flex items-center gap-2 text-gray-500 text-xs"><span class="material-symbols-outlined text-blue-600 text-base">verified</span>Tarif mencakup PPh 23 & Asuransi All-Risk</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-5 items-end">
+<div class="flex flex-col gap-2">
+<label class="text-xs font-semibold text-gray-500 flex items-center gap-1"><span class="material-symbols-outlined text-blue-600">calendar_today</span>Mulai</label>
+<input readonly value="15 Agu 2026, 09:00 WIB" class="w-full h-12 bg-gray-50 border border-gray-200 px-4 rounded-lg text-sm font-medium cursor-pointer">
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-xs font-semibold text-gray-500 flex items-center gap-1"><span class="material-symbols-outlined text-blue-600">event_available</span>Selesai</label>
+<input readonly value="18 Agu 2026, 09:00 WIB" class="w-full h-12 bg-gray-50 border border-gray-200 px-4 rounded-lg text-sm font-medium cursor-pointer">
+</div>
+<a href="katalog.html" class="w-full h-12 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition font-semibold flex items-center justify-center gap-2 shadow-sm"><span class="material-symbols-outlined">search</span>Cari Mobil (18 Unit)</a>
+</div>
+</div>
+</div>
+</section>
+
+<section class="pt-32 pb-8">
+<div class="max-w-container-max mx-auto px-5 md:px-6">
+<div class="bg-white rounded-xl p-4 md:px-6 md:py-3.5 shadow-sm border border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<div class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-ping"></div>
+<p class="text-sm"><span class="font-semibold">Status Pool:</span> <span class="text-blue-600 font-bold">18 Tersedia</span> <span class="text-gray-400 mx-1">|</span> <span class="text-gray-500">20 Jalan</span> <span class="text-gray-400 mx-1">|</span> <span class="text-gray-500">7 Maintenance</span></p>
+</div>
+<div class="flex items-center gap-1.5 text-xs text-gray-500"><span class="material-symbols-outlined text-sm">sync</span>Sync 12 detik lalu</div>
+</div>
+</div>
+</section>
+
+<section class="py-12">
+<div class="max-w-container-max mx-auto px-5 md:px-6 flex flex-col gap-8">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<span class="text-xs text-blue-600 font-bold uppercase tracking-wider">Ready to Roll</span>
+<h2 class="text-2xl font-bold mt-1">Armada Pilihan Minggu Ini</h2>
+<p class="text-sm text-gray-500 mt-1">Inspeksi 50 titik, kabin ozon steril, AC dingin optimal.</p>
+</div>
+<a href="katalog.html" class="flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-800 transition">Lihat Semua 45 Unit <span class="material-symbols-outlined text-lg">arrow_forward</span></a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="car-grid"></div>
+</div>
+</section>
+
+<section id="tata-cara" class="bg-gray-50 py-16">
+<div class="max-w-container-max mx-auto px-5 md:px-6 flex flex-col gap-10">
+<div class="max-w-2xl">
+<span class="text-xs text-blue-600 font-bold uppercase tracking-wider">Prosedur Ringkas</span>
+<h2 class="text-2xl font-bold mt-1">Tata Cara Pemesanan Praktis</h2>
+<p class="text-sm text-gray-500 mt-1">Tanpa registrasi akun. Alur jelas dan transparan.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="p-6 bg-white border border-gray-200 rounded-xl shadow-sm flex flex-col gap-3"><div class="w-9 h-9 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold">1</div><h3 class="font-bold">Pilih Mobil & Tanggal</h3><p class="text-sm text-gray-500">Cek ketersediaan riil. Unit terkunci saat reservasi dimulai.</p></div>
+<div class="p-6 bg-white border border-gray-200 rounded-xl shadow-sm flex flex-col gap-3"><div class="w-9 h-9 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold">2</div><h3 class="font-bold">Form Cepat (Tanpa Login)</h3><p class="text-sm text-gray-500">Isi nama, WhatsApp, upload KTP. Enkripsi AES-256 aman.</p></div>
+<div class="p-6 bg-white border border-gray-200 rounded-xl shadow-sm flex flex-col gap-3"><div class="w-9 h-9 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold">3</div><h3 class="font-bold">Terima Invoice Otomatis</h3><p class="text-sm text-gray-500">Kode <code class="bg-gray-100 px-1 rounded font-mono text-xs">FE-YYYYMMDD-XXX</code> via WhatsApp.</p></div>
+<div class="p-6 bg-white border border-gray-200 rounded-xl shadow-sm flex flex-col gap-3"><div class="w-9 h-9 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold">4</div><h3 class="font-bold">Transfer Bank Resmi</h3><p class="text-sm text-gray-500">DP/pelunasan ke BCA PT FE Rent Car Indonesia. Batas 2 jam.</p></div>
+<div class="p-6 bg-white border border-gray-200 rounded-xl shadow-sm flex flex-col gap-3"><div class="w-9 h-9 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold">5</div><h3 class="font-bold">Verifikasi Otomatis</h3><p class="text-sm text-gray-500">Kirim bukti transfer atau cek status via menu Cek Status.</p></div>
+<div class="p-6 bg-white border border-gray-200 rounded-xl shadow-sm flex flex-col gap-3"><div class="w-9 h-9 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold">6</div><h3 class="font-bold">Serah Terima Kunci</h3><p class="text-sm text-gray-500">Ambil di pool atau antar. Checklist inspeksi digital transparan.</p></div>
+</div>
+</div>
+</section>
+
+<section class="py-16">
+<div class="max-w-container-max mx-auto px-5 md:px-6 flex flex-col gap-8">
+<div class="max-w-xl">
+<span class="text-xs text-blue-600 font-bold uppercase tracking-wider">Integritas Layanan</span>
+<h2 class="text-2xl font-bold mt-1">Kebijakan Transparan</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-white p-8 rounded-xl shadow-sm border border-gray-200 flex flex-col justify-between"><div class="flex flex-col gap-4"><div class="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center text-blue-600"><span class="material-symbols-outlined text-3xl">verified</span></div><h3 class="font-bold text-lg">Garansi Unit Prima 100%</h3><p class="text-sm text-gray-500">Sterilisasi ozon, cuci detail, pemeriksaan mesin berkala.</p></div><div class="mt-6 pt-3 border-t border-gray-100 flex items-center gap-2 text-sm font-semibold"><span class="material-symbols-outlined text-blue-600">check_circle</span>Standar Tertinggi</div></div>
+<div class="bg-white p-8 rounded-xl shadow-sm border border-gray-200 flex flex-col justify-between"><div class="flex flex-col gap-4"><div class="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center text-blue-600"><span class="material-symbols-outlined text-3xl">shield</span></div><h3 class="font-bold text-lg">Privasi Dokumen KTP/SIM</h3><p class="text-sm text-gray-500">Data dimusnahkan 30 hari setelah sewa tuntas per UU PDP.</p></div><div class="mt-6 pt-3 border-t border-gray-100 flex items-center gap-2 text-sm font-semibold"><span class="material-symbols-outlined text-blue-600">check_circle</span>Enkripsi 256-bit</div></div>
+<div class="bg-white p-8 rounded-xl shadow-sm border border-gray-200 flex flex-col justify-between"><div class="flex flex-col gap-4"><div class="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center text-blue-600"><span class="material-symbols-outlined text-3xl">car_crash</span></div><h3 class="font-bold text-lg">Support Darurat 24 Jam</h3><p class="text-sm text-gray-500">Derek resmi + mekanik responsif Jabodetabek. Unit pengganti gratis.</p></div><div class="mt-6 pt-3 border-t border-gray-100 flex items-center gap-2 text-sm font-semibold"><span class="material-symbols-outlined text-blue-600">check_circle</span>Respons Cepat</div></div>
+</div>
+</div>
+</section>
+
+<section class="pb-16">
+<div class="max-w-container-max mx-auto px-5 md:px-6">
+<div class="bg-black text-white rounded-xl p-6 md:p-8 shadow-lg flex flex-col lg:flex-row items-center justify-between gap-6">
+<div class="max-w-2xl">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs font-medium w-fit mb-3"><span class="material-symbols-outlined text-blue-300">headset_mic</span>Korporasi & B2B</div>
+<h2 class="text-2xl font-bold">Perjalanan Dinas atau Kebutuhan Khusus?</h2>
+<p class="text-gray-400 text-sm mt-2">Sewa bulanan, faktur pajak resmi. Admin aktif balas hitungan menit.</p>
+</div>
+<a href="https://wa.me/6281298421920" class="px-6 py-3.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center gap-2 shadow-md transition whitespace-nowrap"><span class="material-symbols-outlined">chat</span>Chat WhatsApp Admin Pusat</a>
+</div>
+</div>
+</section>
+
+</main>
+
+<footer class="bg-gray-50 mt-16">
+<div class="max-w-container-max mx-auto px-5 md:px-6 py-16">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-2"><div class="w-8 h-8 rounded-lg bg-black text-white flex items-center justify-center font-bold text-sm">FE</div><span class="font-bold">FE Rent Car</span></div>
+<p class="text-sm text-gray-500">Mobilitas terpercaya Jabodetabek. Transparansi harga, unit terawat, kenyamanan premium.</p>
+<div class="flex gap-2 text-sm text-gray-500 mt-2"><span class="material-symbols-outlined text-black">pin_drop</span>Jl. Gatot Subroto Kav. 45, Jaksel 12710</div>
+</div>
+<div class="flex flex-col gap-3">
+<h4 class="font-bold">Jam Layanan</h4>
+<div class="p-3 rounded-lg bg-white text-sm"><span class="text-xs text-gray-500 uppercase block mb-1">Pemesanan & Pool</span><p class="font-semibold">Senin-Minggu: 07:00-22:00 WIB</p></div>
+<div class="p-3 rounded-lg bg-white text-sm"><span class="text-xs text-blue-600 uppercase block mb-1 font-bold">Emergency 24 Jam</span><p class="font-semibold">Tersedia 24/7 non-stop</p></div>
+</div>
+<div class="flex flex-col gap-3">
+<h4 class="font-bold">Navigasi</h4>
+<a href="katalog.html" class="text-sm text-gray-500 hover:text-black transition">Katalog Armada</a>
+<a href="#tata-cara" class="text-sm text-gray-500 hover:text-black transition">Persyaratan Sewa</a>
+<a href="cek-status.html" class="text-sm text-gray-500 hover:text-black transition">Lacak Reservasi</a>
+<div class="p-3 rounded-lg bg-white mt-2"><span class="text-xs text-gray-500 uppercase block mb-1">Rekening Resmi</span><p class="font-semibold">BCA 541-098-7201</p><p class="text-xs text-gray-500">a.n. PT FE Rent Car Indonesia</p></div>
+</div>
+<div class="flex flex-col gap-3">
+<h4 class="font-bold">Kepatuhan</h4>
+<p class="text-sm text-gray-500">Data terenkripsi per UU PDP No. 27/2022.</p>
+<div class="flex flex-col gap-1.5 mt-2">
+<div class="flex items-center gap-1.5 text-xs text-gray-500"><span class="material-symbols-outlined text-blue-600">verified_user</span>Asuransi All-Risk</div>
+<div class="flex items-center gap-1.5 text-xs text-gray-500"><span class="material-symbols-outlined text-blue-600">lock</span>Enkripsi KTP 256-bit</div>
+</div>
+</div>
+</div>
+<div class="mt-12 pt-6 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
+<p>&copy; 2024 PT FE Rent Car Indonesia.</p>
+<div class="flex gap-6"><a href="#" class="hover:text-black transition">Privasi</a><a href="#" class="hover:text-black transition">Syarat</a><a href="#" class="hover:text-black transition">Bantuan</a></div>
+</div>
+</div>
+</footer>
+
+<script>
+const cars = [
+  {name:'Toyota Avanza 1.5 G',type:'MPV',price:450000,img:'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=600&h=400&fit=crop',tags:['7 Kursi','Matic','Bensin']},
+  {name:'Toyota Innova Zenix',type:'MPV Premium',price:750000,img:'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&h=400&q=80',tags:['7 Kursi','Hybrid','Kapten']},
+  {name:'Toyota Fortuner VRZ',type:'SUV',price:1500000,img:'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&h=400&q=80',tags:['7 Kursi','Diesel','4x2']}
+];
+const grid = document.getElementById('car-grid');
+cars.forEach(c => {
+  grid.innerHTML += `<div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition flex flex-col group">
+    <div class="flex flex-wrap gap-2 mb-3">${c.tags.map(t=>`<span class="text-xs px-2.5 py-1 rounded-full ${t==='7 Kursi'&&c.name.includes('Avanza')?'bg-blue-600 text-white':'bg-gray-100 text-gray-600'} font-medium">${t}</span>`).join('')}</div>
+    <div class="h-48 bg-gray-100 rounded-lg overflow-hidden mb-4"><img src="${c.img}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300"></div>
+    <h3 class="font-bold text-lg">${c.name}</h3>
+    <span class="text-sm text-gray-500">${c.type}</span>
+    <div class="mt-auto pt-4 border-t border-gray-100 flex items-end justify-between mt-4">
+      <div><span class="text-xs text-gray-500 block">Tarif Harian</span><span class="text-2xl font-bold text-blue-600">Rp ${c.price.toLocaleString('id-ID')}</span><span class="text-sm text-gray-500">/hari</span></div>
+    </div>
+    <a href="mobil.html" class="mt-3 w-full py-3 rounded-lg bg-black text-white font-semibold text-sm text-center hover:bg-gray-800 transition">Pesan Sekarang</a>
+  </div>`;
+});
+function toggleMode(m){
+  const l=document.getElementById('btn-lepas'),s=document.getElementById('btn-sopir');
+  if(m==='lepas'){l.className='px-5 py-2 rounded-lg text-sm font-semibold bg-white shadow-sm transition';s.className='px-5 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-black transition flex items-center gap-1.5';}
+  else{s.className='px-5 py-2 rounded-lg text-sm font-semibold bg-white shadow-sm transition flex items-center gap-1.5';l.className='px-5 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-black transition';}
+}
+</script>
+</body>
+</html>
+
+</content>

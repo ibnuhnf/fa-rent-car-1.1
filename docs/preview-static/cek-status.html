@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cek Status Pesanan | FE Rent Car</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{background:'#f8f9fb',surface:'#f8f9fb','surface-container-lowest':'#fff','surface-container-low':'#f2f4f6','on-surface':'#191c1e','on-surface-variant':'#4c4546',primary:'#000','on-primary':'#fff',secondary:'#184fd6','on-secondary':'#fff'},fontFamily:{sans:['Inter','sans-serif']},maxWidth:{'container-max':'1280px'}}}}</script>
+<style>body{font-family:'Inter',sans-serif;background:#f8f9fb;color:#191c1e}</style>
+</head>
+<body class="antialiased">
+
+<header class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-100">
+<div class="max-w-container-max mx-auto px-5 md:px-6 h-20 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<a href="index.html" class="w-10 h-10 rounded-lg bg-black text-white flex items-center justify-center font-bold text-lg">FE</a>
+<div class="leading-tight"><span class="font-bold block">FE Rent Car</span><span class="text-xs text-gray-500 uppercase tracking-wider">Rental & Mobility</span></div>
+</div>
+<nav class="hidden lg:flex items-center gap-1 bg-gray-50 p-1 rounded-xl">
+<a href="index.html" class="px-3 py-2 rounded-lg text-gray-500 hover:text-black hover:bg-gray-100 text-sm transition">Beranda</a>
+<a href="katalog.html" class="px-3 py-2 rounded-lg text-gray-500 hover:text-black hover:bg-gray-100 text-sm transition">Katalog Armada</a>
+<a href="index.html#tata-cara" class="px-3 py-2 rounded-lg text-gray-500 hover:text-black hover:bg-gray-100 text-sm transition">Tata Cara Sewa</a>
+<a href="cek-status.html" class="px-3 py-2 rounded-lg bg-gray-200 font-semibold text-sm">Cek Status</a>
+<a href="index.html#kontak" class="px-3 py-2 rounded-lg text-gray-500 hover:text-black hover:bg-gray-100 text-sm transition">Kontak</a>
+</nav>
+<div class="flex items-center gap-2">
+<a href="login.html" class="px-4 py-2.5 rounded-lg bg-black text-white text-sm font-semibold hover:bg-gray-800 transition">Admin Login</a>
+</div>
+</div>
+</header>
+
+<main class="pt-24 pb-16 px-5 md:px-6 max-w-container-max mx-auto">
+<div class="max-w-3xl mx-auto">
+
+<div class="text-center mb-10">
+<h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-3">Lacak Status Pesanan Anda</h1>
+<p class="text-gray-500">Masukkan nomor booking atau nomor WhatsApp terdaftar untuk melihat status reservasi.</p>
+</div>
+
+<div class="bg-white rounded-2xl border border-gray-100 p-6 md:p-8 shadow-sm">
+<label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Nomor Booking / No. WhatsApp</label>
+<div class="flex flex-col md:flex-row gap-3">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">receipt_long</span>
+<input id="booking-input" type="text" value="FE-2026-0815-01" class="w-full h-12 pl-12 pr-4 rounded-lg border border-gray-200 bg-gray-50 font-medium focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400">
+</div>
+<button onclick="document.getElementById('result').scrollIntoView({behavior:'smooth'})" class="h-12 px-6 rounded-lg bg-blue-600 text-white font-semibold flex items-center justify-center gap-2 hover:bg-blue-700 transition">
+<span class="material-symbols-outlined">search</span>Lacak
+</button>
+</div>
+<p class="mt-4 text-xs text-gray-500 flex items-center gap-1.5"><span class="material-symbols-outlined text-sm">info</span>Contoh format nomor booking: <strong class="font-mono">FE-2026-0815-01</strong>. Dikirim via WhatsApp & email setelah konfirmasi.</p>
+</div>
+
+<div id="result" class="mt-8 space-y-6">
+
+<div class="bg-white rounded-2xl border border-gray-100 p-6 md:p-8 shadow-sm">
+<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-5 border-b border-gray-100">
+<div>
+<p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Nomor Booking</p>
+<p class="font-mono font-bold text-lg">FE-2026-0815-01</p>
+<p class="text-sm text-gray-600 mt-1">Toyota Avanza 1.5 G CVT &bull; <span class="font-semibold text-blue-600">Lepas Kunci</span></p>
+</div>
+<span class="px-3 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 self-start md:self-center">MENUNGGU VERIFIKASI</span>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-5 pt-5">
+<div>
+<p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Tanggal Mulai</p>
+<p class="font-semibold mt-1">15 Agu 2026</p>
+<p class="text-xs text-gray-500">09:00 WIB</p>
+</div>
+<div>
+<p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Tanggal Selesai</p>
+<p class="font-semibold mt-1">18 Agu 2026</p>
+<p class="text-xs text-gray-500">09:00 WIB</p>
+</div>
+<div>
+<p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Durasi</p>
+<p class="font-semibold mt-1">3 Hari</p>
+</div>
+<div>
+<p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Total Tarif</p>
+<p class="font-semibold mt-1">Rp 1.350.000</p>
+<p class="text-xs text-green-600">Lunas</p>
+</div>
+</div>
+</div>
+
+<div class="bg-white rounded-2xl border border-gray-100 p-6 md:p-8 shadow-sm">
+<p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-5">Timeline Status</p>
+<ol class="relative border-l-2 border-gray-200 ml-3 space-y-7 pl-6">
+<li class="relative">
+<span class="absolute -left-[31px] top-0.5 w-4 h-4 rounded-full bg-green-500 ring-4 ring-green-100"></span>
+<p class="font-semibold">Booking Diterima</p>
+<p class="text-xs text-gray-500 mt-0.5">13 Agu 2026 &bull; 10:24 WIB</p>
+<p class="text-xs text-gray-600 mt-1">Pesanan berhasil dibuat dan menunggu verifikasi admin.</p>
+</li>
+<li class="relative">
+<span class="absolute -left-[31px] top-0.5 w-4 h-4 rounded-full bg-green-500 ring-4 ring-green-100"></span>
+<p class="font-semibold">Pembayaran Diterima</p>
+<p class="text-xs text-gray-500 mt-0.5">13 Agu 2026 &bull; 11:05 WIB</p>
+<p class="text-xs text-gray-600 mt-1">DP 30% via transfer bank telah dikonfirmasi.</p>
+</li>
+<li class="relative">
+<span class="absolute -left-[31px] top-0.5 w-4 h-4 rounded-full bg-blue-600 ring-4 ring-blue-100 animate-pulse"></span>
+<p class="font-semibold text-blue-700">Verifikasi Dokumen</p>
+<p class="text-xs text-gray-500 mt-0.5">Sedang diproses</p>
+<p class="text-xs text-gray-600 mt-1">Tim admin sedang memverifikasi KTP & SIM A Anda.</p>
+</li>
+<li class="relative opacity-50">
+<span class="absolute -left-[31px] top-0.5 w-4 h-4 rounded-full bg-gray-300"></span>
+<p class="font-semibold">Armada Siap Diambil</p>
+<p class="text-xs text-gray-500 mt-0.5">15 Agu 2026 &bull; 09:00 WIB</p>
+</li>
+<li class="relative opacity-50">
+<span class="absolute -left-[31px] top-0.5 w-4 h-4 rounded-full bg-gray-300"></span>
+<p class="font-semibold">Pengembalian Kendaraan</p>
+<p class="text-xs text-gray-500 mt-0.5">18 Agu 2026 &bull; 09:00 WIB</p>
+</li>
+</ol>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<a href="https://wa.me/6281298421920" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 px-5 rounded-xl flex items-center justify-center gap-2 transition shadow-sm">
+<span class="material-symbols-outlined">chat</span>Konfirmasi via WhatsApp
+</a>
+<a href="portal.html" class="bg-white border border-gray-200 hover:border-gray-300 font-semibold py-4 px-5 rounded-xl flex items-center justify-center gap-2 transition">
+<span class="material-symbols-outlined">open_in_new</span>Buka Portal Tamu
+</a>
+</div>
+
+</div>
+
+</div>
+</main>
+
+<footer class="border-t border-gray-100 py-6 px-5 md:px-6 text-center text-xs text-gray-500">
+<div class="max-w-container-max mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+<p>&copy; 2024 PT FE Rent Car Indonesia.</p>
+<div class="flex gap-6">
+<a href="index.html" class="hover:text-black transition">Beranda</a>
+<a href="katalog.html" class="hover:text-black transition">Katalog</a>
+<a href="login.html" class="hover:text-black transition">Admin</a>
+</div>
+</div>
+</footer>
+
+</body>
+</html>

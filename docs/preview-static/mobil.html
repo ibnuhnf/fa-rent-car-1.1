@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toyota Innova Zenix Hybrid | Detail Mobil | FE Rent Car</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{background:'#f8f9fb',surface:'#f8f9fb','surface-container-lowest':'#fff','surface-container-low':'#f2f4f6','on-surface':'#191c1e','on-surface-variant':'#4c4546',primary:'#000','on-primary':'#fff',secondary:'#184fd6','on-secondary':'#fff'},fontFamily:{sans:['Inter','sans-serif']},maxWidth:{'container-max':'1280px'}}}}</script>
+<style>body{font-family:'Inter',sans-serif;background:#f8f9fb;color:#191c1e}</style>
+</head>
+<body class="antialiased">
+
+<header class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-100">
+<div class="max-w-container-max mx-auto px-5 md:px-6 h-20 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<a href="index.html" class="w-10 h-10 rounded-lg bg-black text-white flex items-center justify-center font-bold text-lg">FE</a>
+<div class="leading-tight"><span class="font-bold block">FE Rent Car</span><span class="text-xs text-gray-500 uppercase tracking-wider">Rental & Mobility</span></div>
+</div>
+<nav class="hidden lg:flex items-center gap-1 bg-gray-50 p-1 rounded-xl">
+<a href="index.html" class="px-3 py-2 rounded-lg text-gray-500 hover:text-black hover:bg-gray-100 text-sm transition">Beranda</a>
+<a href="katalog.html" class="px-3 py-2 rounded-lg bg-gray-200 font-semibold text-sm">Katalog Armada</a>
+<a href="index.html#tata-cara" class="px-3 py-2 rounded-lg text-gray-500 hover:text-black hover:bg-gray-100 text-sm transition">Tata Cara Sewa</a>
+<a href="cek-status.html" class="px-3 py-2 rounded-lg text-gray-500 hover:text-black hover:bg-gray-100 text-sm transition">Cek Status</a>
+<a href="index.html#kontak" class="px-3 py-2 rounded-lg text-gray-500 hover:text-black hover:bg-gray-100 text-sm transition">Kontak</a>
+</nav>
+<div class="flex items-center gap-2">
+<a href="login.html" class="px-4 py-2.5 rounded-lg bg-black text-white text-sm font-semibold hover:bg-gray-800 transition">Admin Login</a>
+</div>
+</div>
+</header>
+
+<main class="pt-20 max-w-container-max mx-auto px-5 md:px-6 py-8">
+
+<nav class="flex items-center gap-2 text-xs text-gray-500 uppercase tracking-wider mb-6">
+<a href="index.html" class="hover:text-black transition">Beranda</a>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<a href="katalog.html" class="hover:text-black transition">Katalog Armada</a>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="text-blue-600 font-semibold">Toyota Innova Zenix Hybrid</span>
+</nav>
+
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+<div class="lg:col-span-8 flex flex-col gap-6">
+
+<div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col gap-4">
+<div class="relative h-96 bg-gray-100 rounded-lg overflow-hidden">
+<img id="main-gallery-img" src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&h=400&q=80" class="w-full h-full object-cover">
+<span class="absolute top-4 left-4 px-3 py-1 bg-blue-600 text-white text-xs font-bold rounded-full">Unit Siap Sewa</span>
+</div>
+<div class="grid grid-cols-4 gap-3">
+<button onclick="changeImg('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&h=400&q=80')" class="h-20 bg-gray-100 rounded-lg overflow-hidden border-2 border-blue-600 focus:outline-none"><img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&h=400&fit=crop" class="w-full h-full object-cover"></button>
+<button onclick="changeImg('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&h=400&q=80')" class="h-20 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 hover:border-blue-600 focus:outline-none"><img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&h=400&fit=crop" class="w-full h-full object-cover"></button>
+<button onclick="changeImg('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&h=400&q=80')" class="h-20 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 hover:border-blue-600 focus:outline-none"><img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&h=400&fit=crop" class="w-full h-full object-cover"></button>
+<button onclick="changeImg('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&h=400&q=80')" class="h-20 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 hover:border-blue-600 focus:outline-none"><img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&h=400&fit=crop" class="w-full h-full object-cover"></button>
+</div>
+</div>
+
+<div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col gap-6">
+<div>
+<h1 class="text-2xl font-bold">Toyota Innova Zenix Hybrid (2024)</h1>
+<p class="text-sm text-gray-500 mt-1">Tipe 2.0 V Modellista Panoramic • Plat Genap Jakarta • Pool Sudirman</p>
+</div>
+
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-xl">
+<div class="flex flex-col"><span class="text-xs text-gray-500">Transmisi</span><span class="font-bold text-sm">Automatic CVT</span></div>
+<div class="flex flex-col"><span class="text-xs text-gray-500">Bahan Bakar</span><span class="font-bold text-sm">Bensin Hybrid (Irit)</span></div>
+<div class="flex flex-col"><span class="text-xs text-gray-500">Kapasitas</span><span class="font-bold text-sm">7 Kursi (Captain)</span></div>
+<div class="flex flex-col"><span class="text-xs text-gray-500">Odometer</span><span class="font-bold text-sm">24.120 km</span></div>
+</div>
+
+<div class="flex flex-col gap-3">
+<h3 class="font-bold text-base">Fitur Unggulan</h3>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm text-gray-600">
+<div class="flex items-center gap-2"><span class="material-symbols-outlined text-blue-600 text-lg">check_circle</span>Panoramic Sunroof</div>
+<div class="flex items-center gap-2"><span class="material-symbols-outlined text-blue-600 text-lg">check_circle</span>Captain Seat Ottoman</div>
+<div class="flex items-center gap-2"><span class="material-symbols-outlined text-blue-600 text-lg">check_circle</span>Wireless Apple CarPlay</div>
+<div class="flex items-center gap-2"><span class="material-symbols-outlined text-blue-600 text-lg">check_circle</span>360 Panoramic Camera</div>
+<div class="flex items-center gap-2"><span class="material-symbols-outlined text-blue-600 text-lg">check_circle</span>Toyota Safety Sense 3.0</div>
+<div class="flex items-center gap-2"><span class="material-symbols-outlined text-blue-600 text-lg">check_circle</span>Dual Zone Auto AC</div>
+</div>
+</div>
+
+<div class="flex flex-col gap-3 pt-4 border-t border-gray-100">
+<h3 class="font-bold text-base">Syarat Dokumen (Lepas Kunci)</h3>
+<ul class="list-disc list-inside text-sm text-gray-600 space-y-1">
+<li>Foto Asli e-KTP Pemesan</li>
+<li>Foto Asli SIM A Aktif</li>
+<li>Akun Media Sosial / Bukti Domisili Kerja</li>
+<li>Deposit Jaminan dikembalikan saat unit kembali dalam kondisi prima</li>
+</ul>
+</div>
+</div>
+
+<div class="flex flex-col gap-4">
+<h3 class="font-bold text-lg">Mobil Serupa Tersedia</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<a href="mobil.html" class="p-4 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition flex gap-4 items-center">
+<img src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=600&h=400&fit=crop" class="w-24 h-16 object-cover rounded-lg">
+<div><h4 class="font-bold text-sm">Toyota Avanza 1.5 G</h4><span class="text-xs text-gray-500">MPV • 7 Kursi</span><span class="block font-bold text-blue-600 text-sm mt-1">Rp 450.000/hari</span></div>
+</a>
+<a href="mobil.html" class="p-4 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition flex gap-4 items-center">
+<img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&h=400&q=80" class="w-24 h-16 object-cover rounded-lg">
+<div><h4 class="font-bold text-sm">Toyota Fortuner VRZ</h4><span class="text-xs text-gray-500">SUV • 7 Kursi</span><span class="block font-bold text-blue-600 text-sm mt-1">Rp 1.500.000/hari</span></div>
+</a>
+</div>
+</div>
+
+</div>
+
+<aside class="lg:col-span-4 sticky top-24">
+<div class="bg-white rounded-xl border border-gray-200 shadow-md p-6 flex flex-col gap-6">
+<div>
+<span class="text-xs uppercase font-semibold text-gray-500">Kalkulasi Sewa</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="text-3xl font-bold text-blue-600" id="base-price">Rp 750.000</span>
+<span class="text-sm text-gray-500">/ hari</span>
+</div>
+</div>
+
+<div class="flex flex-col gap-3 p-3 bg-gray-50 rounded-lg">
+<span class="text-xs font-bold uppercase tracking-wider text-gray-600">Layanan</span>
+<div class="grid grid-cols-2 gap-2">
+<button id="calc-lepas" onclick="setService('lepas')" class="p-2.5 rounded-lg text-xs font-bold bg-white border border-blue-600 text-blue-600 shadow-sm">Lepas Kunci</button>
+<button id="calc-sopir" onclick="setService('sopir')" class="p-2.5 rounded-lg text-xs font-bold bg-gray-100 text-gray-600 hover:bg-gray-200">+ Supir (+200rb)</button>
+</div>
+</div>
+
+<div class="flex flex-col gap-3">
+<div>
+<label class="text-xs text-gray-500 font-semibold block mb-1">Durasi Sewa</label>
+<select id="durasi-select" onchange="calculateTotal()" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm font-semibold focus:outline-none">
+<option value="1">1 Hari (24 Jam)</option>
+<option value="2">2 Hari</option>
+<option value="3" selected>3 Hari (Populer)</option>
+<option value="5">5 Hari</option>
+<option value="7">7 Hari (Diskon 5%)</option>
+</select>
+</div>
+<div>
+<label class="text-xs text-gray-500 font-semibold block mb-1">Ambil Unit Di</label>
+<select class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm font-semibold focus:outline-none">
+<option>Pool Utama Sudirman (Gratis)</option>
+<option>Antar ke Bandara Soekarno Hatta (+Rp 150.000)</option>
+<option>Antar ke Rumah Jabodetabek (+Rp 100.000)</option>
+</select>
+</div>
+</div>
+
+<div class="border-t border-gray-100 pt-4 flex flex-col gap-2">
+<div class="flex justify-between text-sm"><span class="text-gray-500">Sewa Mobil (3 Hari)</span><span class="font-medium" id="calc-subtotal">Rp 2.250.000</span></div>
+<div class="flex justify-between text-sm"><span class="text-gray-500">Layanan Sopir</span><span class="font-medium" id="calc-driver">Rp 0</span></div>
+<div class="flex justify-between text-sm"><span class="text-gray-500">Asuransi All-Risk</span><span class="text-emerald-600 font-medium">Termasuk (Gratis)</span></div>
+<div class="border-t border-gray-200 pt-2 flex justify-between items-baseline"><span class="font-bold">Total Biaya</span><span class="text-2xl font-bold text-blue-600" id="calc-total">Rp 2.250.000</span></div>
+</div>
+
+<a href="pesan.html" class="w-full py-3.5 rounded-lg bg-black text-white hover:bg-gray-800 transition font-semibold text-center shadow-sm">Lanjut Pemesanan</a>
+<p class="text-center text-xs text-gray-500">Tanpa biaya siluman • Jaminan mobil sesuai foto</p>
+</div>
+</aside>
+
+</div>
+
+</main>
+
+<footer class="bg-gray-50 mt-16 border-t border-gray-200">
+<div class="max-w-container-max mx-auto px-5 md:px-6 py-12">
+<div class="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+<p>&copy; 2024 PT FE Rent Car Indonesia.</p>
+<div class="flex gap-6"><a href="index.html" class="hover:text-black transition">Beranda</a><a href="katalog.html" class="hover:text-black transition">Katalog</a><a href="cek-status.html" class="hover:text-black transition">Cek Status</a><a href="login.html" class="hover:text-black transition">Admin</a></div>
+</div>
+</div>
+</footer>
+
+<script>
+let currentService = 'lepas';
+function changeImg(src){ document.getElementById('main-gallery-img').src=src; }
+function setService(s){
+  currentService=s;
+  const l=document.getElementById('calc-lepas'), d=document.getElementById('calc-sopir');
+  if(s==='lepas'){
+    l.className='p-2.5 rounded-lg text-xs font-bold bg-white border border-blue-600 text-blue-600 shadow-sm';
+    d.className='p-2.5 rounded-lg text-xs font-bold bg-gray-100 text-gray-600 hover:bg-gray-200';
+  }else{
+    d.className='p-2.5 rounded-lg text-xs font-bold bg-white border border-blue-600 text-blue-600 shadow-sm';
+    l.className='p-2.5 rounded-lg text-xs font-bold bg-gray-100 text-gray-600 hover:bg-gray-200';
+  }
+  calculateTotal();
+}
+function calculateTotal(){
+  const days = parseInt(document.getElementById('durasi-select').value);
+  const baseRate = 750000;
+  const driverRate = currentService === 'sopir' ? 200000 : 0;
+  const subtotal = days * baseRate;
+  const driverTotal = days * driverRate;
+  const total = subtotal + driverTotal;
+  document.getElementById('calc-subtotal').textContent = `Rp ${subtotal.toLocaleString('id-ID')}`;
+  document.getElementById('calc-driver').textContent = `Rp ${driverTotal.toLocaleString('id-ID')}`;
+  document.getElementById('calc-total').textContent = `Rp ${total.toLocaleString('id-ID')}`;
+}
+</script>
+</body>
+</html>
+
+</content>
