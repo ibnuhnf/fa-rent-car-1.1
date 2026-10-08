@@ -9,9 +9,9 @@ async function main() {
   await app.listen(config.get('API_PORT', { infer: true }), '0.0.0.0');
 }
 
-main().catch(() => {
+main().catch((err: unknown) => {
   new Logger('Bootstrap').error(
-    'API startup failed. Check configuration and local service readiness.',
+    `API startup failed: ${err instanceof Error ? err.stack ?? err.message : String(err)}`,
   );
   process.exitCode = 1;
 });
