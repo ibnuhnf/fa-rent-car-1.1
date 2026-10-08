@@ -1,5 +1,3 @@
-const isVercelServices = process.env.VERCEL === '1';
-
 const apiInternalUrl = (process.env.API_INTERNAL_URL ?? 'http://127.0.0.1:4000').replace(
   /\/+$/,
   '',
@@ -10,7 +8,6 @@ const nextConfig = {
   allowedDevOrigins: ['127.0.0.1'],
   devIndicators: false,
   transpilePackages: ['@fa/shared', '@fa/ui'],
-  ...(isVercelServices ? { basePath: '/admin' } : {}),
   async rewrites() {
     return [
       {
